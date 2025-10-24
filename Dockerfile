@@ -9,16 +9,26 @@ WORKDIR /var/www/html
 # ----
 # 2. Instalamos las herramientas y extensiones de PHP que Laravel necesita
 # ----
+
+# ***** ESTA ES LA LÍNEA CORREGIDA *****
+# Añadimos las librerías -dev (libpq-dev, libonig-dev, etc.)
+# antes de intentar instalar las extensiones de PHP.
 RUN apt-get update && apt-get install -y \
     curl \
     zip \
     unzip \
+    libpq-dev \
+    libonig-dev \
+    libexif-dev \
+    libzip-dev \
     && apt-get clean && rm -rf /var/lib/apt/lists/* \
     && docker-php-ext-install \
     pdo_pgsql \
     mbstring \
     exif \
-    bcmath
+    bcmath \
+    zip
+# ***** FIN DE LA CORRECCIÓN *****
 
 # ----
 # 3. Instalamos Composer (el manejador de paquetes de PHP)
@@ -53,10 +63,7 @@ RUN php artisan route:clear
 EXPOSE 10000
 
 # ----
-# 6. COMANDO DE INICIO (ESTO ES LO NUEVO)
+# 6. COMANDO DE INICIO
 # ----
 # Esto le dice a Render qué ejecutar CUANDO el contenedor se inicie.
-# 1. Cachea la configuración (usando las variables de entorno de Render)
-# 2. Ejecuta las migraciones a Supabase
-# 3. Inicia el servidor de Laravel en el puerto que Render le asigne
 CMD ["sh", "-c", "php artisan config:cache && php artisan route:cache && php artisan migrate --force && php artisan serve --host 0.0.0.0 --port $PORT"]
