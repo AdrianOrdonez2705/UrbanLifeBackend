@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\MensajeController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PruebaController;
@@ -13,3 +14,4 @@ Route::get('/user', function (Request $request) {
 Route::post('/prueba', [PruebaController::class, 'store']);
 Route::get('/get_proveedores', [ProveedorController::class, 'index']);
 Route::get('/get_proyectos', [ProyectoController::class, 'index']);
+Route::post('/mensaje', [MensajeController::class, 'store']);
