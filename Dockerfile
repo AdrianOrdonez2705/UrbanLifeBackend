@@ -5,36 +5,37 @@ FROM php:8.2-bullseye
 WORKDIR /var/www/html
 
 # 3. Install System Dependencies
-# This is the updated, more robust list.
+# This is one single, unbroken RUN command.
 RUN apt-get update && apt-get install -y \
     git \
     curl \
     unzip \
     zip \
-    # Core build tools
     build-essential \
-    # Dependencies for PHP extensions
-    libpq-dev \      # for pdo_pgsql
-    libzip-dev \     # for zip
-    libxml2-dev \    # for xml
-    libonig-dev \    # for mbstring
-    # Dependencies for gd
+    libpq-dev \
+    libzip-dev \
+    libxml2-dev \
+    libonig-dev \
     libpng-dev \
     libjpeg-dev \
     libfreetype6-dev \
     libwebp-dev \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# 4. Install PHP Extensions (More robust method)
-# Install core extensions
-RUN docker-php-ext-install pdo pdo_pgsql mbstring xml zip fileinfo
-
-# Configure and install GD with common features
-RUN docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp
-RUN docker-php-ext-install gd
-
-# Install remaining extensions
-RUN docker-php-ext-install exif pcntl bcmath
+# 4. Install PHP Extensions
+# This is also one single, unbroken RUN command.
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
+    && docker-php-ext-install \
+    pdo \
+    pdo_pgsql \
+    mbstring \
+    xml \
+    zip \
+    fileinfo \
+    gd \
+    exif \
+    pcntl \
+    bcmath
 
 # 5. Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
