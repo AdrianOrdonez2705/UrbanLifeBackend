@@ -1,0 +1,14 @@
+.git
+.github
+.env
+.env.example
+.dockerignore
+Dockerfile
+node_modules
+public/build
+public/hot
+storage/framework/cache/data/*
+storage/framework/sessions/*
+storage/framework/views/*
+storage/logs/*
+vendor
