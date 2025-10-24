@@ -7,12 +7,8 @@ FROM php:8.2-cli AS base
 WORKDIR /var/www/html
 
 # ----
-# 2. Instalamos las herramientas y extensiones de PHP que Laravel necesita
+# 2. Instalamos las herramientas, extensiones Y FORZAMOS IPv4
 # ----
-
-# ***** ESTA ES LA LÍNEA CORREGIDA *****
-# Añadimos las librerías -dev (libpq-dev, libonig-dev, etc.)
-# antes de intentar instalar las extensiones de PHP.
 RUN apt-get update && apt-get install -y \
     curl \
     zip \
@@ -22,13 +18,18 @@ RUN apt-get update && apt-get install -y \
     libexif-dev \
     libzip-dev \
     && apt-get clean && rm -rf /var/lib/apt/lists/* \
+    \
+    # --- ¡ESTA ES LA LÍNEA NUEVA! ---
+    # Forzamos al sistema a preferir IPv4 sobre IPv6 para conexiones salientes
+    && echo "precedence ::ffff:0:0/96 100" >> /etc/gai.conf \
+    # --- FIN DE LA LÍNEA NUEVA ---
+    \
     && docker-php-ext-install \
     pdo_pgsql \
     mbstring \
     exif \
     bcmath \
     zip
-# ***** FIN DE LA CORRECCIÓN *****
 
 # ----
 # 3. Instalamos Composer (el manejador de paquetes de PHP)
