@@ -1,7 +1,10 @@
 .env
-/vendor/
-/node_modules/
+.env.example
 .git
 .gitignore
+.gitattributes
+/vendor
+/node_modules
 Dockerfile
 .dockerignore
+.docker/

@@ -1,70 +1,73 @@
-# ----
-# 1. La Base: Usamos una imagen oficial de PHP 8.2 (necesaria para Laravel 11/12)
-# ----
-FROM php:8.2-cli AS base
+# 1. Base Image: Use the official PHP 8.2-FPM image.
+FROM php:8.2-fpm-bullseye
 
-# Marcamos nuestra carpeta de trabajo dentro del "contenedor"
+# 2. Set Working Directory
 WORKDIR /var/www/html
 
-# ----
-# 2. Instalamos las herramientas, extensiones Y FORZAMOS IPv4
-# ----
+# 3. Install System Dependencies
+# We need Git, Zip (for Composer), and Supervisor.
+# We also need Nginx as our web server.
+# And we need the dev libraries for the PHP extensions (libpq for pgsql, libzip, etc.)
 RUN apt-get update && apt-get install -y \
+    git \
     curl \
-    zip \
     unzip \
+    zip \
+    nginx \
+    supervisor \
     libpq-dev \
-    libonig-dev \
-    libexif-dev \
     libzip-dev \
-    && apt-get clean && rm -rf /var/lib/apt/lists/* \
-    \
-    # --- ¡ESTA ES LA LÍNEA NUEVA! ---
-    # Forzamos al sistema a preferir IPv4 sobre IPv6 para conexiones salientes
-    && echo "precedence ::ffff:0:0/96 100" >> /etc/gai.conf \
-    # --- FIN DE LA LÍNEA NUEVA ---
-    \
-    && docker-php-ext-install \
+    libxml2-dev \
+    libpng-dev \
+    libjpeg-dev \
+    libfreetype6-dev \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# 4. Install PHP Extensions
+# This installs all extensions Laravel needs, PLUS pdo_pgsql for your Supabase database.
+RUN docker-php-ext-install \
+    pdo \
     pdo_pgsql \
     mbstring \
     exif \
+    pcntl \
     bcmath \
-    zip
+    zip \
+    xml \
+    fileinfo \
+    gd
 
-# ----
-# 3. Instalamos Composer (el manejador de paquetes de PHP)
-# ----
+# 5. Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# ----
-# 4. Copiamos tu proyecto y configuramos permisos
-# ----
-# Primero copiamos solo composer.json para instalar dependencias
-COPY composer.json composer.lock ./
-RUN composer install --no-dev --no-autoloader --no-scripts
-
-# Ahora copiamos el resto de tu código
+# 6. Copy Application Code
+# We copy the code *before* installing dependencies to leverage Docker caching.
 COPY . .
 
-# Generamos el autoloader de Laravel
-RUN composer dump-autoload --optimize
+# 7. Install Composer Dependencies (for production)
+# We ignore platform reqs to use the image's PHP version and skip dev tools.
+RUN composer install --no-dev --optimize-autoloader --no-scripts --no-interaction --ignore-platform-reqs
 
-# Damos permisos a la carpeta de storage
+# 8. Set Permissions
+# The web server (www-data) needs to own storage and cache to write logs and cache files.
+RUN chown -R www-data:www-data storage bootstrap/cache
 RUN chmod -R 775 storage bootstrap/cache
 
-# ----
-# 5. Configuración final
-# ----
-# Limpiamos la caché por si acaso
-RUN php artisan config:clear
-RUN php artisan view:clear
-RUN php artisan route:clear
+# 9. Copy Configuration Files
+# Copy the Nginx and Supervisor configs we will create next.
+COPY .docker/nginx.conf /etc/nginx/sites-available/default
+COPY .docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
-# Exponemos el puerto (esto es más informativo, el $PORT de abajo es el que manda)
-EXPOSE 10000
+# 10. Expose Port
+# Nginx will listen on port 80 inside the container.
+# Render will automatically map its public URL to this port.
+EXPOSE 80
 
-# ----
-# 6. COMANDO DE INICIO
-# ----
-# Esto le dice a Render qué ejecutar CUANDO el contenedor se inicie.
-CMD ["sh", "-c", "php artisan config:cache && php artisan route:cache && php artisan migrate --force && php artisan serve --host 0.0.0.0 --port $PORT"]
+# 11. Run Laravel Optimizations
+RUN php artisan config:cache \
+    && php artisan route:cache \
+    && php artisan view:cache
+
+# 12. Entrypoint
+# Start Supervisor, which will in turn start Nginx and PHP-FPM.
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
