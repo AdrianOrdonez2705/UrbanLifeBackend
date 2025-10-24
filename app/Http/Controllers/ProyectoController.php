@@ -9,7 +9,11 @@ use Illuminate\Http\Request;
 class ProyectoController extends Controller
 {
     public function index(): JsonResponse {
-        $proyectos = Proyecto::select('nombre','imagen')->orderBy('id_proyecto', 'desc')->take(3)->get();
+        $proyectos = Proyecto::join('documento', 'proyecto.id_proyecto', '=', 'documento.proyecto_id_proyecto')
+                            ->select('proyecto.nombre', 'documento.ruta')
+                            ->orderBy('proyecto.id_proyecto', 'desc')
+                            ->take(3)
+                            ->get();
         return response()->json($proyectos);
     }
 }
