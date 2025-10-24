@@ -49,7 +49,14 @@ RUN php artisan config:clear
 RUN php artisan view:clear
 RUN php artisan route:clear
 
-# Exponemos el puerto que Render usará (esto es solo informativo)
+# Exponemos el puerto (esto es más informativo, el $PORT de abajo es el que manda)
 EXPOSE 10000
 
-# El comando de inicio se lo daremos en el dashboard de Render
+# ----
+# 6. COMANDO DE INICIO (ESTO ES LO NUEVO)
+# ----
+# Esto le dice a Render qué ejecutar CUANDO el contenedor se inicie.
+# 1. Cachea la configuración (usando las variables de entorno de Render)
+# 2. Ejecuta las migraciones a Supabase
+# 3. Inicia el servidor de Laravel en el puerto que Render le asigne
+CMD ["sh", "-c", "php artisan config:cache && php artisan route:cache && php artisan migrate --force && php artisan serve --host 0.0.0.0 --port $PORT"]
