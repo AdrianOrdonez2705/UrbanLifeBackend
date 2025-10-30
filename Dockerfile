@@ -1,16 +1,7 @@
-# 1. Base Image
-FROM php:8.2-bullseye
-
-# 2. Set Working Directory
+FROM php:8.4-apache AS builder
 WORKDIR /var/www/html
 
-# 3. Install System Dependencies
-# This is one single, unbroken RUN command.
 RUN apt-get update && apt-get install -y \
-    git \
-    curl \
-    unzip \
-    zip \
     build-essential \
     libpq-dev \
     libzip-dev \
@@ -20,10 +11,12 @@ RUN apt-get update && apt-get install -y \
     libjpeg-dev \
     libfreetype6-dev \
     libwebp-dev \
+    git \
+    curl \
+    unzip \
+    zip \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# 4. Install PHP Extensions
-# This is also one single, unbroken RUN command.
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
     && docker-php-ext-install \
     pdo \
@@ -31,34 +24,49 @@ RUN docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
     mbstring \
     xml \
     zip \
-    fileinfo \
     gd \
     exif \
-    pcntl \
     bcmath
 
-# 5. Install Composer
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+RUN a2enmod rewrite
 
-# 6. Copy Application Code
+COPY --from=composer:2.8.12 /usr/bin/composer /usr/bin/composer
+
+COPY database/ database/
+COPY composer.json composer.lock ./
+RUN composer install --no-dev --optimize-autoloader --no-interaction
+
 COPY . .
 
-# 7. Install Composer Dependencies
-RUN composer install --no-dev --optimize-autoloader --no-scripts --no-interaction --ignore-platform-reqs
+RUN php artisan config:cache
+RUN php artisan route:cache
+RUN php artisan view:cache
 
-# 8. Set Permissions
 RUN chown -R www-data:www-data storage bootstrap/cache
 RUN chmod -R 775 storage bootstrap/cache
 
-# 9. Run Laravel Optimizations
-RUN php artisan config:cache
-RUN php artisan route:cache
+FROM php:8.4-apache AS final
+WORKDIR /var/www/html
 
-# 10. Change User
-USER www-data
+RUN apt-get update && apt-get install -y \
+    libpq-dev \
+    libzip-dev \
+    libxml2-dev \
+    libonig-dev \
+    libpng-dev \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# 11. Expose Port
-EXPOSE 8000
+COPY --from=builder /usr/local/lib/php/extensions/ /usr/local/lib/php/extensions/
+COPY --from=builder /usr/local/etc/php/conf.d/ /usr/local/etc/php/conf.d/
 
-# 12. Entrypoint Command
-CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=10000"]
+COPY --from=builder /etc/apache2/mods-enabled/rewrite.load /etc/apache2/mods-enabled/
+
+COPY --from=builder /var/www/html .
+
+COPY .docker/laravel.conf /etc/apache2/sites-available/000-default.conf
+COPY .docker/docker-entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
+
+CMD ["apache2-foreground"]

@@ -5,6 +5,3 @@
 .gitattributes
 /vendor
 /node_modules
-Dockerfile
-.dockerignore
-.docker/
