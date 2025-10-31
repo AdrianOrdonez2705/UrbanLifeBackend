@@ -17,6 +17,12 @@ class Usuario extends Authenticatable implements JWTSubject
     protected $primaryKey = 'id_usuario';
     public $timestamps = false;
 
+    protected $fillable = [
+        'nombre',
+        'correo',
+        'contrasenia',
+        'rol_id_rol'
+    ];
     // These attributes should be hidden from JSON responses
     protected $hidden = [
         'contrasenia',

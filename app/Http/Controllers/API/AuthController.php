@@ -16,6 +16,48 @@ use Illuminate\Validation\ValidationException;
 class AuthController extends Controller
 {
     /**
+     * Create a new user.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function register(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'nombre' => 'required|string|max:255',
+            'correo' => 'required|string|email|max:255|unique:usuario',
+            'contrasenia' => 'required|string|min:8|confirmed',
+            'rol_id_rol' => 'required|integer',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+
+        try {
+            $user = Usuario::create([
+                'nombre' => $request->nombre,
+                'correo' => $request->correo,
+                'contrasenia' => Hash::make($request->contrasenia),
+                'rol_id_rol' => $request->rol_id_rol,
+            ]);
+
+            $token = JWTAuth::fromUser($user);
+
+            return response()->json([
+                'message' => 'User successfully registered',
+                'user' => $user,
+                'access_token' => $token,
+                'token_type' => 'bearer',
+                'expires_in' => config('jwt.ttl') * 60
+            ], 201);
+
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Could not create user', 'message' => $e->getMessage()], 500);
+        }
+    }
+    
+    /**
      * The login endpoint.
      *
      * @param \Illuminate\Http\Request $request

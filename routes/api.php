@@ -23,6 +23,7 @@ Route::post('/mensaje', [MensajeController::class, 'store']);
 
 // Public route for logging in.
 Route::post('login', [AuthController::class, 'login']);
+Route::post('registrar_usuario', [AuthController::class, 'register']);
 
 // A protected route group for testing your token.
 // This middleware uses the 'api' guard we defined in config/auth.php.
