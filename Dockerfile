@@ -1,4 +1,4 @@
-FROM php:8.4-apache AS builder
+FROM php:8.3-apache AS builder
 WORKDIR /var/www/html
 
 RUN apt-get update && apt-get install -y \
@@ -43,7 +43,7 @@ RUN composer dump-autoload --optimize --no-dev
 RUN chown -R www-data:www-data storage bootstrap/cache
 RUN chmod -R 775 storage bootstrap/cache
 
-FROM php:8.4-apache AS final
+FROM php:8.3-apache AS final
 WORKDIR /var/www/html
 
 RUN apt-get update && apt-get install -y \
