@@ -47,11 +47,14 @@ FROM php:8.4-apache AS final
 WORKDIR /var/www/html
 
 RUN apt-get update && apt-get install -y \
-    libpq-dev \
-    libzip-dev \
-    libxml2-dev \
-    libonig-dev \
-    libpng-dev \
+    libpq5 \
+    libzip4 \
+    libxml2 \
+    libonig5 \
+    libpng16-16 \
+    libfreetype6 \
+    libjpeg62-turbo \
+    libwebp7 \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 COPY --from=builder /usr/local/lib/php/extensions/ /usr/local/lib/php/extensions/

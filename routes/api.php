@@ -11,6 +11,10 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
+Route::get('/health', function () {
+    return response()->json(['status' => 'healthy']);
+});
+
 Route::post('/prueba', [PruebaController::class, 'store']);
 Route::get('/get_proveedores', [ProveedorController::class, 'index']);
 Route::get('/get_proyectos', [ProyectoController::class, 'index']);

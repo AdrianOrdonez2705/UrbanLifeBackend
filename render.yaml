@@ -4,6 +4,7 @@ services:
     repo: https://github.com/AdrianOrdonez2705/UrbanLifeBackend.git
     autoDeploy: true
     runtime: docker
+    healthCheckPath: /api/health
     preDeployCommand: |
       php artisan config:cache
       php artisan route:cache
