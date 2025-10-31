@@ -15,6 +15,7 @@ use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\ActividadSospechosa;
+use App\Models\Auditoria;
 
 class AuthController extends Controller
 {
@@ -84,6 +85,13 @@ class AuthController extends Controller
                 Mail::to($usuario->correo)->send(new ActividadSospechosa($usuario->toArray(), $actividad));
             }*/
 
+            Auditoria::create([
+                'hora' => now(),
+                'fecha' => now(),
+                'id_usuario' => $usuario ? $usuario->id_usuario : null,
+                'status' => 'failed'
+            ]);
+
             $seconds = RateLimiter::availableIn($key);
             return response()->json([
                 'error' => "Demasiados intentos fallidos. Intente de nuevo en {$seconds} segundos."
@@ -94,6 +102,13 @@ class AuthController extends Controller
 
         if (!$user || !Hash::check($request->contrasenia, $user->contrasenia)) {
             RateLimiter::hit($key, 900);
+
+            Auditoria::create([
+                'hora' => now(),
+                'fecha' => now(),
+                'id_usuario' => $user ? $user->id_usuario : null, 
+                'status' => 'failed'
+            ]);
             return response()->json(['error' => 'Unauthorized: Invalid credentials'], 401);
         }
         RateLimiter::clear($key);
@@ -103,6 +118,13 @@ class AuthController extends Controller
         Cache::put('2fa_' . $user->correo, $codigo, now()->addMinutes(5));
 
         //Mail::to($user->correo)->send(new Verificacion2Pasos($user->toArray(), $codigo));
+
+        Auditoria::create([
+            'hora' => now(),
+            'fecha' => now(),
+            'id_usuario' => $user->id_usuario,
+            'status' => 'success'
+        ]);
 
         return response()->json([
             'message' => 'Código de verificacion enviado',
