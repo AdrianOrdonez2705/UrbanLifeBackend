@@ -16,6 +16,8 @@ use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\ActividadSospechosa;
 use App\Models\Auditoria;
+use App\Mail\Verificacion2Pasos;
+use App\Mail\RecuperarContrasenia;
 
 class AuthController extends Controller
 {
@@ -167,6 +169,68 @@ class AuthController extends Controller
 
     }
     
+       public function forgotPassword(Request $request){
+        $validator = Validator::make($request->all(), [
+            'correo' => 'required|email',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+
+        $user = Usuario::where('correo', $request->correo)->first();
+
+        if (!$user) {
+            // No reveles que no existe (mejor práctica)
+            return response()->json(['message' => 'Si el correo es válido, se enviará un enlace de recuperación.']);
+        }
+
+        // Generar token temporal único
+        $token = bin2hex(random_bytes(32));
+
+        // Guardarlo en cache por 15 minutos
+        Cache::put('reset_' . $user->correo, $token, now()->addMinutes(15));
+
+        // Enviar correo
+        Mail::to($user->correo)->send(new ResetPasswordMail($user->toArray(), $token));
+
+        return response()->json(['message' => 'Se envió un enlace para restablecer la contraseña.']);
+    }
+
+    public function resetPassword(Request $request){
+        $validator = Validator::make($request->all(), [
+            'correo' => 'required|email',
+            'token' => 'required|string',
+            'nueva_contrasenia' => 'required|string|min:8|confirmed',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+
+        $cachedToken = Cache::get('reset_' . $request->correo);
+
+        if (!$cachedToken || $cachedToken !== $request->token) {
+            return response()->json(['error' => 'Token inválido o expirado'], 401);
+        }
+
+        // Actualizar contraseña
+        $user = Usuario::where('correo', $request->correo)->first();
+
+        if (!$user) {
+            return response()->json(['error' => 'Usuario no encontrado'], 404);
+        }
+
+        $user->contrasenia = Hash::make($request->nueva_contrasenia);
+        $user->save();
+
+        // Borrar token temporal
+        Cache::forget('reset_' . $request->correo);
+
+        return response()->json(['message' => 'Contraseña restablecida correctamente.']);
+    }
+
+
     public function profile()
     {
         return response()->json(auth('api')->user());

@@ -16,10 +16,13 @@
         <p>Haz clic en el siguiente botón para continuar:</p>
 
         <p>
-            <a href="{{ $resetUrl }}" class="btn">Restablecer contraseña</a>
+            <a href="{{ env('FRONTEND_URL') }}/reset-password?token={{ $token }}&email={{ $usuario['correo'] }}"
+            style="display:inline-block;background-color:#2563eb;color:#fff;padding:10px 20px;text-decoration:none;border-radius:5px;">
+            Restablecer contraseña
+            </a>
         </p>
 
-        <p>Este enlace expirará en 30 minutos.</p>
+        <p>Este enlace expirará en 15 minutos.</p>
 
         <p>Si no solicitaste este cambio, puedes ignorar este correo.</p>
 

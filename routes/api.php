@@ -26,6 +26,9 @@ Route::post('login', [AuthController::class, 'login']);
 Route::post('registrar_usuario', [AuthController::class, 'register']);
 Route::post('verify-2fa', [AuthController::class, 'verify2FA']);
 
+Route::post('forgot-password', [AuthController::class, 'forgotPassword']);
+Route::post('reset-password', [AuthController::class, 'resetPassword']);
+
 // A protected route group for testing your token.
 // This middleware uses the 'api' guard we defined in config/auth.php.
 Route::middleware('auth:api')->group(function () {
