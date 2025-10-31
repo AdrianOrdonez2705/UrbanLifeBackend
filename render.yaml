@@ -35,6 +35,8 @@ services:
         value: postgres
       - key: DB_USERNAME
         value: postgres
+      - key: DB_SSLMODE
+        value: require
       - key: APP_KEY
         secret: true
       - key: DB_PASSWORD
