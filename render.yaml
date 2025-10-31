@@ -5,17 +5,17 @@ services:
     autoDeploy: true
     runtime: docker
     healthCheckPath: /api/health
-    preDeployCommand: |
-      php artisan cache:clear
-      php artisan config:clear
-      php artisan route:clear
-      php artisan view:clear
+    #preDeployCommand: |
+    #  php artisan cache:clear
+    #  php artisan config:clear
+    #  php artisan route:clear
+    #  php artisan view:clear
       
-      php artisan config:cache
-      php artisan route:cache
-      php artisan view:cache
+    #  php artisan config:cache
+    #  php artisan route:cache
+    #  php artisan view:cache
       
-      chown -R www-data:www-data storage bootstrap/cache
+    #  chown -R www-data:www-data storage bootstrap/cache
     envVars:
       - key: APP_ENV
         value: production
