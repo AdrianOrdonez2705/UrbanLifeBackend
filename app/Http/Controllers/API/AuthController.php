@@ -9,6 +9,9 @@ use Illuminate\Support\Facades\Hash;
 use App\Models\Usuario;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Tymon\JWTAuth\Exceptions\JWTException;
+use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
@@ -20,6 +23,7 @@ class AuthController extends Controller
      */
     public function login(Request $request)
     {
+        
         // 1. Validate the incoming data
         $validator = Validator::make($request->all(), [
             'correo' => 'required|email',
@@ -30,14 +34,24 @@ class AuthController extends Controller
             return response()->json($validator->errors(), 422);
         }
 
+        $key = Str::lower($request->correo) . '|' . $request->ip();
+
+        if (RateLimiter::tooManyAttempts($key, 3)){
+            $seconds = RateLimiter::availableIn($key);
+            return response()->json([
+                'error' => "Demasiados intentos fallidos. Intente de nuevo en {$seconds} segundos."
+            ], 429);
+        }
+
         // 2. Find the user by their 'correo'
         $user = Usuario::where('correo', $request->correo)->first();
 
         // 3. Check if user exists and if the password is correct
         if (!$user || !Hash::check($request->contrasenia, $user->contrasenia)) {
+            RateLimiter::hit($key, 900);
             return response()->json(['error' => 'Unauthorized: Invalid credentials'], 401);
         }
-
+        RateLimiter::clear($key);
         // 4. User is valid, so create the token
         try {
             $token = JWTAuth::fromUser($user);
