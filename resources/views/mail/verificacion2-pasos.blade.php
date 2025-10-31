@@ -14,7 +14,7 @@
         <h2>Hola {{ $usuario['nombre'] ?? 'usuario' }},</h2>
         <p>Para completar tu inicio de sesión, introduce el siguiente código en la aplicación:</p>
         <p class="code">{{ $codigo }}</p>
-        <p>Este código expirará en 10 minutos.</p>
+        <p>Este código expirará en 5 minutos.</p>
         <p>Si no fuiste tú quien intentó iniciar sesión, cambia tu contraseña de inmediato.</p>
         <p style="font-size: 0.9em; color: #666;">— El equipo de {{ config('app.name') }}</p>
     </div>
