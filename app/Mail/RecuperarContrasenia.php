@@ -14,7 +14,7 @@ class RecuperarContrasenia extends Mailable
     use Queueable, SerializesModels;
 
     public $usuario;
-    public $resetUrl;
+    public $resetUrl; // URL completa para el reset de contraseña
 
     /**
      * Create a new message instance.
@@ -42,6 +42,10 @@ class RecuperarContrasenia extends Mailable
     {
         return new Content(
             view: 'mail.recuperar-contrasenia',
+            with: [
+                'usuario' => $this->usuario,
+                'resetUrl' => $this->resetUrl, // Pasamos la URL al Blade
+            ],
         );
     }
 
