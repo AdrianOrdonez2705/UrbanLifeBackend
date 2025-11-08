@@ -34,4 +34,38 @@ class UsuarioController extends Controller
             ], 500);
         }
     }
+
+    public function show($id_usuario)
+    {
+        try {
+            $usuario = Usuario::with('rol')->find($id_usuario);
+
+            if (!$usuario) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Usuario no encontrado.'
+                ], 404);
+            }
+
+            $usuarioMapeado = [
+                'id_usuario' => $usuario->id_usuario,
+                'nombre' => $usuario->nombre,
+                'correo' => $usuario->correo,
+                'rol' => $usuario->rol->rol ?? null,
+            ];
+
+            return response()->json([
+                'success' => true,
+                'data' => $usuarioMapeado
+            ], 200);
+
+        } catch (\Exception $e) {
+            Log::error('Error al obtener el usuario: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Ocurrió un error al obtener el usuario.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
 }

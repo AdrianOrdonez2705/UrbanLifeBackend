@@ -42,3 +42,4 @@ Route::get('/hash-password/{password}', function ($password) {
 
 Route::post('registrar_usuario', [AuthController::class, 'register']);
 Route::get('/get_usuarios', [UsuarioController::class, 'index']);
+Route::get('/get_single_usuario/{id_usuario}', [UsuarioController::class, 'show']);
