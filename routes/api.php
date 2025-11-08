@@ -45,3 +45,4 @@ Route::get('/get_all_usuarios', [UsuarioController::class, 'index']);
 Route::get('/get_all_usuarios/rol/{rolNombre}', [UsuarioController::class, 'findByRol']);
 Route::get('/get_usuario/id/{id_usuario}', [UsuarioController::class, 'show']);
 Route::get('/get_usuario/nombre/{nombre}', [UsuarioController::class, 'findByNombre']);
+Route::put('/update_usuario/{id_usuario}', [UsuarioController::class, 'update']);
