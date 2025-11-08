@@ -102,4 +102,37 @@ class UsuarioController extends Controller
             ], 500);
         }
     }
+
+    public function findByRol($rolNombre)
+    {
+        try {
+            $usuarios = Usuario::with('rol')
+                ->whereHas('rol', function ($query) use ($rolNombre) {
+                    $query->where('rol', $rolNombre);
+                })
+                ->get();
+
+            $usuariosMapeados = $usuarios->map(function ($usuario) {
+                return [
+                    'id_usuario' => $usuario->id_usuario,
+                    'nombre' => $usuario->nombre,
+                    'correo' => $usuario->correo,
+                    'rol' => $usuario->rol->rol ?? null,
+                ];
+            });
+
+            return response()->json([
+                'success' => true,
+                'data' => $usuariosMapeados
+            ], 200);
+
+        } catch (\Exception $e) {
+            Log::error('Error al buscar usuarios por rol: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Ocurrió un error al buscar usuarios por rol.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
 }
