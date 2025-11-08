@@ -46,3 +46,4 @@ Route::get('/get_all_usuarios/rol/{rolNombre}', [UsuarioController::class, 'find
 Route::get('/get_usuario/id/{id_usuario}', [UsuarioController::class, 'show']);
 Route::get('/get_usuario/nombre/{nombre}', [UsuarioController::class, 'findByNombre']);
 Route::put('/update_usuario/{id_usuario}', [UsuarioController::class, 'update']);
+Route::delete('/delete_usuario/{id_usuario}', [UsuarioController::class, 'destroy']);

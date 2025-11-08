@@ -198,4 +198,33 @@ class UsuarioController extends Controller
             ], 500);
         }
     }
+
+    public function destroy($id_usuario)
+    {
+        try {
+            $usuario = Usuario::find($id_usuario);
+
+            if (!$usuario) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Usuario no encontrado.'
+                ], 404);
+            }
+
+            $usuario->delete();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Usuario eliminado correctamente.'
+            ], 200);
+
+        } catch (\Exception $e) {
+            Log::error('Error al eliminar usuario: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Ocurrió un error al eliminar el usuario.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
 }
