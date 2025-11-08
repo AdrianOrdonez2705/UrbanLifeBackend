@@ -68,4 +68,38 @@ class UsuarioController extends Controller
             ], 500);
         }
     }
+
+    public function findByNombre($nombre)
+    {
+        try {
+            $usuario = Usuario::with('rol')->where('nombre', $nombre)->first();
+
+            if (!$usuario) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Usuario no encontrado.'
+                ], 404);
+            }
+
+            $usuarioMapeado = [
+                'id_usuario' => $usuario->id_usuario,
+                'nombre' => $usuario->nombre,
+                'correo' => $usuario->correo,
+                'rol' => $usuario->rol->rol ?? null,
+            ];
+
+            return response()->json([
+                'success' => true,
+                'data' => $usuarioMapeado
+            ], 200);
+
+        } catch (\Exception $e) {
+            Log::error('Error al buscar usuario por nombre: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Ocurrió un error al buscar el usuario.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
 }
