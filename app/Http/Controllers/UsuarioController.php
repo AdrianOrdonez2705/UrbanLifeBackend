@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Empleado;
 use App\Models\Rol;
 use App\Models\Usuario;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 
@@ -240,30 +242,50 @@ class UsuarioController extends Controller
         }
     }
 
-    public function destroy($id_usuario)
-    {
+    public function borradoLogico($id_empleado) {
         try {
-            $usuario = Usuario::find($id_usuario);
+            $empleado = Empleado::find($id_empleado);
+            $usuario = Usuario::where('empleado_id_empleado', $id_empleado)->first();
 
-            if (!$usuario) {
+            if (!$empleado) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Usuario no encontrado.'
+                    'message' => 'Empleado no encontrado.'
+                ], 404);
+            }
+            
+            if (!$usuario) {
+                 return response()->json([
+                    'success' => false,
+                    'message' => 'Usuario asociado al empleado no encontrado.'
                 ], 404);
             }
 
-            $usuario->delete();
+            if ($empleado->activo === false) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'El usuario ya se encuentra desactivado.'
+                ], 400);
+            }
+
+            DB::transaction(function () use ($usuario, $empleado) {
+                $empleado->activo = false;
+                $empleado->save();
+
+                $usuario->activo = false;
+                $usuario->save();
+            });
 
             return response()->json([
                 'success' => true,
-                'message' => 'Usuario eliminado correctamente.'
+                'message' => 'Usuario y empleado desactivados correctamente.'
             ], 200);
 
         } catch (\Exception $e) {
-            Log::error('Error al eliminar usuario: ' . $e->getMessage());
+            Log::error('Error en borrado lógico: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
-                'message' => 'Ocurrió un error al eliminar el usuario.',
+                'message' => 'Ocurrió un error al procesar la solicitud.',
                 'error' => $e->getMessage()
             ], 500);
         }
