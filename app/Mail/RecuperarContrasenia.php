@@ -42,6 +42,10 @@ class RecuperarContrasenia extends Mailable
     {
         return new Content(
             view: 'mail.recuperar-contrasenia',
+            with: [
+                'usuario' => $this->usuario,
+                'resetUrl' => $this->resetUrl, // Pasamos la URL al Blade
+            ],
         );
     }
 
