@@ -21,6 +21,7 @@ use App\Mail\ActividadSospechosa;
 use App\Mail\Verificacion2Pasos;
 use App\Mail\RecuperarContrasenia;
 
+
 class AuthController extends Controller
 {
     public function register(Request $request)
@@ -83,7 +84,7 @@ class AuthController extends Controller
         }
     }
     
-    public function login(Request $request)
+     public function login(Request $request)
     {
         
         $validator = Validator::make($request->all(), [
@@ -144,7 +145,7 @@ class AuthController extends Controller
 
         Cache::put('2fa_' . $user->correo, $codigo, now()->addMinutes(5));
 
-        //Mail::to($user->correo)->send(new Verificacion2Pasos($user->toArray(), $codigo));
+        Mail::to($user->correo)->send(new Verificacion2Pasos($user->toArray(), $codigo));
 
         Auditoria::create([
             'hora' => now(),
@@ -155,15 +156,17 @@ class AuthController extends Controller
 
         return response()->json([
             'message' => 'Código de verificacion enviado',
-            'correo' => $user->correo
+            'correo' => $user->correo,
+            'user'=>$user
         ]);
         
+      
     }
 
     public function verify2FA(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'correo' => 'required|mail',
+            'correo' => 'required|email',
             'codigo' => 'required|digits:6',
         ]);
 
@@ -173,8 +176,8 @@ class AuthController extends Controller
 
         $cachedCode = Cache::get('2fa_' . $request->correo);
 
-        if(!$cachedCode || $cachedCode != $request->correo){
-            return response()->json(['error' => 'Código invaido o expirado'], 401);
+        if (!$cachedCode || $cachedCode != $request->codigo) {
+            return response()->json(['error' => 'Código inválido o expirado'], 401);
         }
 
         $user = Usuario::where('correo', $request->correo)->first();
@@ -193,7 +196,7 @@ class AuthController extends Controller
         ]);
 
     }
-    
+ 
        public function forgotPassword(Request $request){
         $validator = Validator::make($request->all(), [
             'correo' => 'required|email',
@@ -217,7 +220,12 @@ class AuthController extends Controller
         Cache::put('reset_' . $user->correo, $token, now()->addMinutes(15));
 
         // Enviar correo
-        Mail::to($user->correo)->send(new ResetPasswordMail($user->toArray(), $token));
+      
+        $resetUrl = env('FRONTEND_URL', 'http://localhost:4200/auth') 
+            . "/cambiar-contrasenia?token={$token}&email={$user->correo}";
+
+        Mail::to($user->correo)->send(new RecuperarContrasenia($user->toArray(), $resetUrl));
+
 
         return response()->json(['message' => 'Se envió un enlace para restablecer la contraseña.']);
     }
