@@ -13,13 +13,19 @@ class UsuarioController extends Controller
     public function index()
     {
         try {
-            $usuarios = Usuario::with('rol')->get();
+            $usuarios = Usuario::with(['rol', 'empleado'])->get();
             $usuariosMapeados = $usuarios->map(function ($usuario) {
                 return [
                     'id_usuario' => $usuario->id_usuario,
                     'nombre' => $usuario->nombre,
                     'correo' => $usuario->correo,
                     'rol' => $usuario->rol->rol ?? null,
+                    'empleado' => $usuario->empleado ? [
+                        'id_empleado' => $usuario->empleado->id_empleado ?? null,
+                        'nombre' => $usuario->empleado->nombre ?? null,
+                        'puesto' => $usuario->empleado->puesto ?? null,
+                        'contrato' => $puesto->empleado->contrato ?? null,
+                    ] : null,
                 ];
             });
 
@@ -54,6 +60,12 @@ class UsuarioController extends Controller
                 'nombre' => $usuario->nombre,
                 'correo' => $usuario->correo,
                 'rol' => $usuario->rol->rol ?? null,
+                'empleado' => $usuario->empleado ? [
+                    'id_empleado' => $usuario->empleado->id_empleado,
+                    'nombre' => $usuario->empleado->nombre,
+                    'puesto' => $usuario->empleado->puesto,
+                    'contrato' => $usuario->empleado->contrato,
+                ] : null,
             ];
 
             return response()->json([
@@ -88,6 +100,12 @@ class UsuarioController extends Controller
                 'nombre' => $usuario->nombre,
                 'correo' => $usuario->correo,
                 'rol' => $usuario->rol->rol ?? null,
+                'empleado' => $usuario->empleado ? [
+                    'id_empleado' => $usuario->empleado->id_empleado,
+                    'nombre' => $usuario->empleado->nombre,
+                    'puesto' => $usuario->empleado->puesto,
+                    'contrato' => $usuario->empleado->contrato,
+                ] : null,
             ];
 
             return response()->json([
@@ -120,6 +138,12 @@ class UsuarioController extends Controller
                     'nombre' => $usuario->nombre,
                     'correo' => $usuario->correo,
                     'rol' => $usuario->rol->rol ?? null,
+                    'empleado' => $usuario->empleado ? [
+                        'id_empleado' => $usuario->empleado->id_empleado,
+                        'nombre' => $usuario->empleado->nombre,
+                        'puesto' => $usuario->empleado->puesto,
+                        'contrato' => $usuario->empleado->contrato,
+                    ] : null,
                 ];
             });
 
@@ -150,12 +174,18 @@ class UsuarioController extends Controller
             }
 
             $validatedData = $request->validate([
-                'nombre' => 'sometimes|string|max:255',
-                'correo' => 'sometimes|string|email|max:255|unique:usuario,correo,' . $id_usuario . ',id_usuario',
-                'rol'    => 'sometimes|string|exists:rol,rol' 
-            ]);
+            'nombre' => 'sometimes|string|max:255',
+            'correo' => 'sometimes|string|email|max:255|unique:usuario,correo,' . $id_usuario . ',id_usuario',
+            'rol' => 'sometimes|string|exists:rol,rol',
+            'empleado_id_empleado' => 'sometimes|integer|exists:empleado,id_empleado',
 
-            $dataToUpdate = $request->only(['nombre', 'correo']);
+            'empleado.nombre' => 'sometimes|string|max:255',
+            'empleado.puesto' => 'sometimes|string|max:255',
+            'empleado.contrato' => 'sometimes|string|max:255',
+            'empleado.activo' => 'sometimes|boolean',
+        ]);
+
+            $dataToUpdate = $request->only(['nombre', 'correo', 'empleado_id_empleado']);
 
             if ($request->has('rol')) {
                 $rol = Rol::where('rol', $validatedData['rol'])->first();
@@ -168,13 +198,24 @@ class UsuarioController extends Controller
                 $usuario->update($dataToUpdate);
             }
 
-            $usuario->load('rol');
+            if ($request->has('empleado') && $usuario->empleado) {
+                $empleadoData = $request->input('empleado');
+                $usuario->empleado->update($empleadoData);
+            }
+
+            $usuario->load(['rol', 'empleado']);
 
             $usuarioMapeado = [
                 'id_usuario' => $usuario->id_usuario,
                 'nombre' => $usuario->nombre,
                 'correo' => $usuario->correo,
                 'rol' => $usuario->rol->rol ?? null,
+                'empleado' => $usuario->empleado ? [
+                    'id_empleado' => $usuario->empleado->id_empleado,
+                    'nombre' => $usuario->empleado->nombre,
+                    'puesto' => $usuario->empleado->puesto,
+                    'contrato' => $usuario->empleado->contrato,
+                ] : null,
             ];
 
             return response()->json([
