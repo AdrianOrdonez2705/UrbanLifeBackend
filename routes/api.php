@@ -7,6 +7,7 @@ use App\Http\Controllers\PruebaController;
 use App\Http\Controllers\ProveedorController;
 use App\Http\Controllers\ProyectoController;
 use App\Http\Controllers\API\AuthController;
+use App\Http\Controllers\TrabajadorController;
 use App\Http\Controllers\UsuarioController;
 use Illuminate\Support\Facades\Hash;
 
@@ -47,3 +48,7 @@ Route::get('/get_usuario/id/{id_usuario}', [UsuarioController::class, 'show']);
 Route::get('/get_usuario/nombre/{nombre}', [UsuarioController::class, 'findByNombre']);
 Route::put('/update_usuario/{id_usuario}', [UsuarioController::class, 'update']);
 Route::put('/eliminar_empleado/{id_empleado}', [UsuarioController::class, 'borradoLogico']);
+
+Route::get('/get_all_trabajadores', [TrabajadorController::class, 'index']);
+Route::post('/crear_trabajador', [TrabajadorController::class, 'store']);
+Route::put('/update_trabajador/{id_trabajador}', [TrabajadorController::class, 'update']);
