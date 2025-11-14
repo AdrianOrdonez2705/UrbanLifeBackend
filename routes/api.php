@@ -50,5 +50,5 @@ Route::put('/update_usuario/{id_usuario}', [UsuarioController::class, 'update'])
 Route::put('/eliminar_empleado/{id_empleado}', [UsuarioController::class, 'borradoLogico']);
 
 Route::get('/get_all_trabajadores', [TrabajadorController::class, 'index']);
-Route::post('/crear_trabajador', [TrabajadorController::class, 'store']);
+Route::post('/registrar_trabajador', [TrabajadorController::class, 'register']);
 Route::put('/update_trabajador/{id_trabajador}', [TrabajadorController::class, 'update']);

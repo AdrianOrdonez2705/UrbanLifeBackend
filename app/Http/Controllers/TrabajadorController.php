@@ -13,7 +13,7 @@ class TrabajadorController extends Controller
         return response()->json($trabajadores);
     }
 
-    public function store(Request $request) {
+    public function register(Request $request) {
         $validator = Validator::make($request->all(), [
             'nombre' => 'required|string|max:255',
             'fecha_nac' => 'required|date',
@@ -29,7 +29,7 @@ class TrabajadorController extends Controller
     }
 
     public function update(Request $request, $id_trabajador) {
-        
+
         $trabajador = Trabajador::find($id_trabajador);
 
         if (!$trabajador) {
