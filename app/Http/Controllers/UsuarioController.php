@@ -5,12 +5,14 @@ namespace App\Http\Controllers;
 use App\Models\Empleado;
 use App\Models\Rol;
 use App\Models\Usuario;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class UsuarioController extends Controller
 {
@@ -46,7 +48,7 @@ class UsuarioController extends Controller
     public function show($id_usuario)
     {
         try {
-            $usuario = Usuario::with(['rol', 'empleado'])->find($id);
+            $usuario = Usuario::with(['rol', 'empleado'])->find($id_usuario);
 
             if (!$usuario) {
                 return response()->json([
@@ -75,85 +77,6 @@ class UsuarioController extends Controller
             ], 500);
         }
     }
-
-    /*public function findByNombre($nombre)
-    {
-        try {
-            $usuario = Usuario::with('rol')->where('nombre', $nombre)->first();
-
-            if (!$usuario) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Usuario no encontrado.'
-                ], 404);
-            }
-
-            $usuarioMapeado = [
-                'id_usuario' => $usuario->id_usuario,
-                'nombre' => $usuario->nombre,
-                'correo' => $usuario->correo,
-                'rol' => $usuario->rol->rol ?? null,
-                'empleado' => $usuario->empleado ? [
-                    'id_empleado' => $usuario->empleado->id_empleado,
-                    'nombre' => $usuario->empleado->nombre,
-                    'puesto' => $usuario->empleado->puesto,
-                    'contrato' => $usuario->empleado->contrato,
-                ] : null,
-            ];
-
-            return response()->json([
-                'success' => true,
-                'data' => $usuarioMapeado
-            ], 200);
-
-        } catch (\Exception $e) {
-            Log::error('Error al buscar usuario por nombre: ' . $e->getMessage());
-            return response()->json([
-                'success' => false,
-                'message' => 'Ocurrió un error al buscar el usuario.',
-                'error' => $e->getMessage()
-            ], 500);
-        }
-    }*/
-
-    /*public function findByRol($rolNombre)
-    {
-        try {
-            $usuarios = Usuario::with('rol')
-                ->whereHas('rol', function ($query) use ($rolNombre) {
-                    $query->where('rol', $rolNombre);
-                })
-                ->get();
-
-            $usuariosMapeados = $usuarios->map(function ($usuario) {
-                return [
-                    'id_usuario' => $usuario->id_usuario,
-                    'nombre' => $usuario->nombre,
-                    'correo' => $usuario->correo,
-                    'rol' => $usuario->rol->rol ?? null,
-                    'empleado' => $usuario->empleado ? [
-                        'id_empleado' => $usuario->empleado->id_empleado,
-                        'nombre' => $usuario->empleado->nombre,
-                        'puesto' => $usuario->empleado->puesto,
-                        'contrato' => $usuario->empleado->contrato,
-                    ] : null,
-                ];
-            });
-
-            return response()->json([
-                'success' => true,
-                'data' => $usuariosMapeados
-            ], 200);
-
-        } catch (\Exception $e) {
-            Log::error('Error al buscar usuarios por rol: ' . $e->getMessage());
-            return response()->json([
-                'success' => false,
-                'message' => 'Ocurrió un error al buscar usuarios por rol.',
-                'error' => $e->getMessage()
-            ], 500);
-        }
-    }*/
 
     public function update(Request $request, $id_usuario)
     {
@@ -242,6 +165,46 @@ class UsuarioController extends Controller
                 'success' => false,
                 'message' => 'Ocurrió un error al procesar la solicitud.',
                 'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function asignar_usuario(Request $request) {
+        $validator = Validator::make($request->all(), [
+            'rol_id_rol' => 'required|integer',
+            'correo' => 'required|string|email|unique:usuario',
+            'contrasenia' => 'required|string',
+            'activo' => 'nullable|boolean',
+            'empleado_id_empleado' => 'required|integer'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+
+        $validatedData = $validator->validated();
+        $validatedData['contrasenia'] = Hash::make($validatedData['contrasenia']);
+ 
+        try {
+            $user = Usuario::create($validatedData);
+            $token = JWTAuth::fromUser($user);
+
+            if (!$user) {
+                throw new \Exception("Ocurrió un error en la asignación del usuario");
+            }
+
+            return response()->json([
+                'message' => 'Usuario asignado correctamente',
+                'user' => $user,
+                'access_token' => $token,
+                'token_type' => 'bearer',
+                'expires_in' => config('jwt.ttl') * 60
+            ], 201);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'No se pudo asignar un usuario al empleado',
+                'message' => $e->getMessage()
             ], 500);
         }
     }

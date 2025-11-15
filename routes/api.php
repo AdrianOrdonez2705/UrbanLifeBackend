@@ -67,3 +67,5 @@ Route::put('/update_proveedor/{id_proveedor}', [ProveedorController::class, 'upd
 Route::get('/get_material_proveedores', [MaterialProveedorController::class, 'index']);
 Route::post('/registrar_material_proveedor', [MaterialProveedorController::class, 'register']);
 Route::put('/update_material_proveedor/{id_material}', [MaterialProveedorController::class, 'update']);
+
+Route::post('/asignar_usuario', [UsuarioController::class, 'asignar_usuario']);
