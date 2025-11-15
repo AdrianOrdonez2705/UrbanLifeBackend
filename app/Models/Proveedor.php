@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Proveedor extends Model
 {
@@ -26,4 +27,8 @@ class Proveedor extends Model
     protected $casts = [
         'visibilidad' => 'boolean',
     ];
+
+    public function materiales() : HasMany {
+        return $this->hasMany(MaterialProveedor::class, 'proveedor_id_proveedor', 'id_proveedor');
+    }
 }
