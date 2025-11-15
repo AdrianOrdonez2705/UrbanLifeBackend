@@ -20,7 +20,6 @@ Route::get('/health', function () {
 });
 
 Route::post('/prueba', [PruebaController::class, 'store']);
-Route::get('/get_proveedores', [ProveedorController::class, 'index']);
 Route::get('/get_proyectos', [ProyectoController::class, 'index']);
 Route::post('/mensaje', [MensajeController::class, 'store']);
 
@@ -52,3 +51,7 @@ Route::put('/eliminar_empleado/{id_empleado}', [UsuarioController::class, 'borra
 Route::get('/get_all_trabajadores', [TrabajadorController::class, 'index']);
 Route::post('/registrar_trabajador', [TrabajadorController::class, 'register']);
 Route::put('/update_trabajador/{id_trabajador}', [TrabajadorController::class, 'update']);
+
+Route::get('/get_proveedores', [ProveedorController::class, 'index']);
+Route::post('/registrar_proveedor', [ProveedorController::class, 'register']);
+Route::put('/update_proveedor/{id_proveedor}', [ProveedorController::class, 'update']);
