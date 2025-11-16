@@ -6,7 +6,6 @@ use App\Models\Empleado;
 use App\Models\Usuario;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
@@ -36,6 +35,38 @@ class EmpleadoController extends Controller
                 'success' => false,
                 'message' => 'Ocurrió un error al obtener los empleados.'
             ], 500);
+        }
+    }
+
+    public function register(Request $request) {
+        $validator = Validator::make($request->all(), [
+            'nombre' => 'required|string',
+            'puesto' => 'required|string',
+            'contrato' => 'required|string',
+            'activo' => 'nullable|boolean'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+
+        try {
+            $empleado = Empleado::create($validator->validated());
+
+            if (!$empleado) {
+                throw new \Exception("Hubo un error al crear el empleado");
+            }
+
+            return response()->json([
+                'message' => 'Empleado creado correctamente',
+                'data' => $empleado
+            ], 201);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'No se pudo crear el empleado',
+                'message' => $e->getMessage()
+            ]);
         }
     }
 

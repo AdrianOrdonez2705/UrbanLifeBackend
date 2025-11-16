@@ -23,65 +23,6 @@ use App\Mail\RecuperarContrasenia;
 
 class AuthController extends Controller
 {
-    public function register(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'nombre' => 'required|string|max:255', 
-            'puesto' => 'required|string|max:255',
-            'contrato' => 'required|string',
-            'correo' => 'required|string|email|max:255|unique:usuario',
-            'contrasenia' => 'required|string|min:8|confirmed',
-            'rol_id_rol' => 'required|integer|exists:rol,id_rol',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json($validator->errors(), 422);
-        }
-
-        $user = null;
-
-        try {
-            DB::transaction(function () use ($request, &$user) {
-                
-                $empleado = Empleado::create([
-                    'nombre' => $request->nombre,
-                    'puesto' => $request->puesto,
-                    'contrato' => $request->contrato,
-                    'activo' => true
-                ]);
-
-                $user = Usuario::create([
-                    'nombre' => $request->nombre,
-                    'correo' => $request->correo,
-                    'contrasenia' => Hash::make($request->contrasenia),
-                    'rol_id_rol' => $request->rol_id_rol,
-                    'activo' => true,
-                    'empleado_id_empleado' => $empleado->id_empleado
-                ]);
-
-            });
-
-            if (!$user) {
-                throw new \Exception("La creación del usuario falló silenciosamente.");
-            }
-
-            $token = JWTAuth::fromUser($user);
-
-            return response()->json([
-                'message' => 'Usuario y Empleado registrados exitosamente',
-                'user' => $user,
-                'access_token' => $token,
-                'token_type' => 'bearer',
-                'expires_in' => config('jwt.ttl') * 60
-            ], 201);
-
-        } catch (\Exception $e) {
-            return response()->json([
-                'error' => 'No se pudo registrar al usuario y empleado', 
-                'message' => $e->getMessage()
-            ], 500);
-        }
-    }
     
     public function login(Request $request)
     {
