@@ -39,7 +39,7 @@ Route::put('/eliminar_empleado/{id_empleado}', [UsuarioController::class, 'borra
 
 // EMPLEADO
 Route::post('/registrar_empleado', [EmpleadoController::class, 'register']);
-Route::get('/get_all_empleados', [EmpleadoController::class, 'index']);
+Route::get('/get_all_empleados', [EmpleadoController::class, 'index']); // Este endpoint devuelve usuario true o false
 Route::get('/get_empleado/id/{id_empleado}', [EmpleadoController::class, 'show']);
 Route::put('/update_empleado/{id_empleado}', [EmpleadoController::class, 'update']);
 Route::put('eliminar_empleado/{id_empleado}', [EmpleadoController::class, 'borradoLogico']);

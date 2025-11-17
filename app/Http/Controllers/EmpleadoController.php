@@ -14,13 +14,19 @@ class EmpleadoController extends Controller
 {
     public function index(){
         try {
+
             $empleados = Empleado::get();
+
             $empleadosMapeados = $empleados->map(function ($empleado) {
+
+                $usuario = Usuario::where('empleado_id_empleado', $empleado->id_empleado)->exists();
+
                 return [
                     'id_empleado' => $empleado->id_empleado,
                     'nombre' => $empleado->nombre ?? null,
                     'puesto' => $empleado->puesto ?? null,
                     'contrato' => $empleado->contrato ?? null,
+                    'usuario' => $usuario
                 ];
             });
 
