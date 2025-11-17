@@ -11,6 +11,7 @@ class ProveedorController extends Controller
 {
     public function index(): JsonResponse {
         $proveedores = Proveedor::select(
+            'id_proveedor',
             'nombre',
             'contacto',
             'telefono',
