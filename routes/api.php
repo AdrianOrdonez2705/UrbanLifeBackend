@@ -8,6 +8,7 @@ use App\Http\Controllers\ProyectoController;
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\MaterialProveedorController;
 use App\Http\Controllers\EmpleadoController;
+use App\Http\Controllers\PedidoController;
 use App\Http\Controllers\TrabajadorController;
 use App\Http\Controllers\UsuarioController;
 
@@ -59,3 +60,5 @@ Route::get('/get_material_proveedores', [MaterialProveedorController::class, 'in
 Route::post('/registrar_material_proveedor', [MaterialProveedorController::class, 'register']);
 Route::put('/update_material_proveedor/{id_material}', [MaterialProveedorController::class, 'update']);
 
+// PEDIDOS
+Route::get('/get_material_pedidos', [PedidoController::class, 'getMaterialPedidos']);
