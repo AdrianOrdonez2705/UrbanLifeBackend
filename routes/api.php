@@ -71,3 +71,6 @@ Route::get('/get_movimientos_presupuesto', [ContabilidadController::class, 'getM
 
 // MATERIAL_PROVEEDOR
 Route::get('/get_all_materiales_proveedores', [ProveedorController::class, 'getProveedoresWithMateriales']);
+
+// PROYECTOS_ACTIVOS
+Route::get('/get_proyectos_activos', [ProyectoController::class, 'getProyectosActivos']);
