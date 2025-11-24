@@ -69,4 +69,28 @@ class ProveedorController extends Controller
 
         return response()->json($proveedor);
     }
+
+    public function getProveedoresWithMateriales() {
+        $proveedores = Proveedor::with('materiales')->get();
+
+        if (!$proveedores) {
+            return response()->json(['message' => 'No se encontraron proveedores ni materiales'], 204);
+        }
+
+        $data = $proveedores->map(function ($proveedor) {
+            return [
+                'id_proveedor' => $proveedor->id_proveedor,
+                'nombre' => $proveedor->nombre,
+                'correo' => $proveedor->correo,
+                'materiales' => $proveedor->materiales->map(function ($material) {
+                    return [
+                        'id_material_proveedor' => $material->id_material,
+                        'material' => $material->material,
+                    ];
+                })
+            ];
+        });
+
+        return response()->json($data, 200);
+    }
 }
