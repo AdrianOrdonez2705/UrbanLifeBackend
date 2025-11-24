@@ -10,12 +10,14 @@ use Illuminate\Support\Facades\Validator;
 
 class TrabajadorController extends Controller
 {
-    public function index() {
+    public function index()
+    {
         $trabajadores = Trabajador::all();
         return response()->json($trabajadores);
     }
 
-    public function register(Request $request) {
+    public function register(Request $request)
+    {
         $validator = Validator::make($request->all(), [
             'nombre' => 'required|string|max:255',
             'fecha_nac' => 'required|date',
@@ -30,7 +32,8 @@ class TrabajadorController extends Controller
         return response()->json($trabajador, 201);
     }
 
-    public function update(Request $request, $id_trabajador) {
+    public function update(Request $request, $id_trabajador)
+    {
 
         $trabajador = Trabajador::find($id_trabajador);
 
@@ -53,42 +56,40 @@ class TrabajadorController extends Controller
         return response()->json($trabajador);
     }
 
-    public function getDetallesTrabajador($id_trabajador)
+    public function getDetallesTrabajadores()
     {
-        $trabajador = Trabajador::find($id_trabajador);
+        $trabajadores = Trabajador::all();
 
-        if (!$trabajador) {
-            return response()->json(['message' => 'Trabajador no encontrado'], 404);
+        $lista = [];
+
+        foreach ($trabajadores as $trabajador) {
+
+            $ultimaContratacion = ContratacionTrabajador::where('trabajador_id_trabajador', $trabajador->id_trabajador)
+                ->orderBy('fecha_inicio', 'desc')
+                ->first();
+
+            $proyecto = $ultimaContratacion ? $ultimaContratacion->proyecto : null;
+
+            $ultimaAsistencia = Asistencia::where('trabajador_id_trabajador', $trabajador->id_trabajador)
+                ->orderBy('fecha', 'desc')
+                ->orderBy('hora_entrada', 'desc')
+                ->first();
+
+            $lista[] = [
+                'id_trabajador'     => $trabajador->id_trabajador,
+                'nombre_trabajador' => $trabajador->nombre,
+                'puesto'            => $ultimaContratacion->puesto ?? null,
+                'fecha_inicio'      => $ultimaContratacion->fecha_inicio ?? null,
+                'fecha_fin'         => $ultimaContratacion->fecha_fin ?? null,
+                'salario'           => $ultimaContratacion->salario ?? null,
+                'id_proyecto'       => $proyecto->id_proyecto ?? null,
+                'nombre_proyecto'   => $proyecto->nombre ?? null,
+                'observacion'       => $ultimaAsistencia->observacion ?? null,
+                'fecha'             => $ultimaAsistencia->fecha ?? null,
+                'hora_entrada'      => $ultimaAsistencia->hora_entrada ?? null,
+            ];
         }
 
-        $ultimaContratacion = ContratacionTrabajador::where('trabajador_id_trabajador', $id_trabajador)
-            ->orderBy('fecha_inicio', 'desc')
-            ->first();
-
-        $proyecto = null;
-        if ($ultimaContratacion) {
-            $proyecto = $ultimaContratacion->proyecto;
-        }
-
-        $ultimaAsistencia = Asistencia::where('trabajador_id_trabajador', $id_trabajador)
-            ->orderBy('fecha', 'desc')
-            ->orderBy('hora_entrada', 'desc')
-            ->first();
-
-        $datos_respuesta = [
-            'id_trabajador' => $trabajador->id_trabajador,
-            'nombre_trabajador' => $trabajador->nombre,
-            'puesto' => $ultimaContratacion ? $ultimaContratacion->puesto : null,
-            'fecha_inicio' => $ultimaContratacion ? $ultimaContratacion->fecha_inicio : null,
-            'fecha_fin' => $ultimaContratacion ? $ultimaContratacion->fecha_fin : null,
-            'salario' => $ultimaContratacion ? $ultimaContratacion->salario : null,
-            'id_proyecto' => $proyecto ? $proyecto->id_proyecto : null,
-            'nombre_proyecto' => $proyecto ? $proyecto->nombre : null,
-            'observacion' => $ultimaAsistencia ? $ultimaAsistencia->observacion : null,
-            'fecha' => $ultimaAsistencia ? $ultimaAsistencia->fecha : null,
-            'hora_entrada' => $ultimaAsistencia ? $ultimaAsistencia->hora_entrada : null,
-        ];
-
-        return response()->json($datos_respuesta);
+        return response()->json(['data' => $lista]);
     }
 }
