@@ -36,4 +36,8 @@ class Proyecto extends Model
     public function asistencias() : HasMany {
         return $this->hasMany(Asistencia::class, 'proyecto_id_proyecto', 'id_proyecto');
     }
+
+    public function movimientosContables() : HasMany {
+        return $this->hasMany(Contabilidad::class, 'proyecto_id_proyecto', 'id_proyecto');
+    }
 }

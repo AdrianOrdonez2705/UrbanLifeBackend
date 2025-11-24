@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProveedorController;
 use App\Http\Controllers\ProyectoController;
 use App\Http\Controllers\API\AuthController;
+use App\Http\Controllers\ContabilidadController;
 use App\Http\Controllers\MaterialProveedorController;
 use App\Http\Controllers\EmpleadoController;
 use App\Http\Controllers\PedidoController;
@@ -64,3 +65,4 @@ Route::put('/update_material_proveedor/{id_material}', [MaterialProveedorControl
 Route::get('/get_material_pedidos', [PedidoController::class, 'getMaterialPedidos']);
 
 Route::get('/get_detalles_trabajador/{id_trabajador}', [TrabajadorController::class, 'getDetallesTrabajador']);
+Route::get('/get_movimientos_proyectos', [ContabilidadController::class, 'getAllMovimientos']);
