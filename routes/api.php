@@ -64,5 +64,7 @@ Route::put('/update_material_proveedor/{id_material}', [MaterialProveedorControl
 // PEDIDOS
 Route::get('/get_material_pedidos', [PedidoController::class, 'getMaterialPedidos']);
 
+// CONTABILIDAD
 Route::get('/get_detalles_trabajadores', [TrabajadorController::class, 'getDetallesTrabajadores']);
 Route::get('/get_movimientos_proyectos', [ContabilidadController::class, 'getAllMovimientos']);
+Route::get('/get_movimientos_presupuesto', [ContabilidadController::class, 'getMovimientosConPresupuesto']);
