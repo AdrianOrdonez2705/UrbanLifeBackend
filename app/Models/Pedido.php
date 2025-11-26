@@ -14,6 +14,16 @@ class Pedido extends Model
     protected $primaryKey = 'id_pedido';
     public $timestamps = false;
 
+    protected $fillable = [
+        'id_proveedor',
+        'fecha_solicitud',
+        'estado',
+        'id_proyecto',
+        'fecha_llegada_estimada',
+        'fecha_llegada_real',     
+        'mensaje',                
+    ];
+
     public function proveedor(): BelongsTo {
         return $this->belongsTo(Proveedor::class, 'proveedor_id_proveedor', 'id_proveedor');
     }
@@ -25,5 +35,10 @@ class Pedido extends Model
             'pedido_id_pedido',
             'material_id_material'
         )->withPivot('cantidad', 'precio_unitario');
+    }
+
+    public function materiales_pedido()
+    {
+        return $this->hasMany(MaterialPedido::class, 'id_pedido', 'id_pedido');
     }
 }

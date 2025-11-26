@@ -74,3 +74,6 @@ Route::get('/get_all_materiales_proveedores', [ProveedorController::class, 'getP
 
 // PROYECTOS_ACTIVOS
 Route::get('/get_proyectos_activos', [ProyectoController::class, 'getProyectosActivos']);
+
+// REGISTRAR UN NUEVO PEDIDO CON ARREGLO DE MATERIALES
+Route::post('/registrar_pedido', [PedidoController::class, 'store']);
