@@ -40,4 +40,8 @@ class Proyecto extends Model
     public function movimientosContables() : HasMany {
         return $this->hasMany(Contabilidad::class, 'proyecto_id_proyecto', 'id_proyecto');
     }
+
+    public function pedidos() : HasMany {
+        return $this->hasMany(Pedido::class, 'id_proyecto', 'id_proyecto');
+    }
 }

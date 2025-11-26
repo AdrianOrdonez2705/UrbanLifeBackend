@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Pedido;
+use App\Http\Resources\PedidoMaterialResource;
 use App\Http\Resources\PedidoResource;
+use App\Models\Pedido;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -91,6 +92,32 @@ class PedidoController extends Controller
             DB::rollBack();
             return response()->json([
                 'mensaje' => 'Error al guardar el pedido. La operación fue revertida.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function index(): JsonResponse
+    {
+        try {
+            $pedidos = Pedido::with([
+                'proveedor:id_proveedor,nombre',
+                'proyecto:id_proyecto,nombre',
+                'movimientosContables:proyecto_id_proyecto,monto', 
+                'materiales_pedido.materialProveedor:id_material,material'
+            ])
+            ->get();
+
+            $recursos = PedidoMaterialResource::collection($pedidos);
+
+            return response()->json([
+                'mensaje' => 'Lista de pedidos recuperada exitosamente.',
+                'data' => $recursos->toArray(request())
+            ], 200);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'mensaje' => 'Error al obtener los pedidos y materiales.',
                 'error' => $e->getMessage()
             ], 500);
         }

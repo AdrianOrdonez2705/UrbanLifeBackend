@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class MaterialProveedor extends Model
 {
@@ -25,5 +26,10 @@ class MaterialProveedor extends Model
 
     public function proveedor() : BelongsTo {
         return $this->belongsTo(Proveedor::class, 'proveedor_id_proveedor', 'id_proveedor');
+    }
+
+    public function pedidosMaterial(): HasMany 
+    {
+        return $this->hasMany(MaterialPedido::class, 'id_material', 'id_material');
     }
 }

@@ -77,3 +77,6 @@ Route::get('/get_proyectos_activos', [ProyectoController::class, 'getProyectosAc
 
 // REGISTRAR UN NUEVO PEDIDO CON ARREGLO DE MATERIALES
 Route::post('/registrar_pedido', [PedidoController::class, 'store']);
+
+// OBTENER TODOS LOS DATOS DE LOS PEDIDOS
+Route::get('/get_all_pedidos', [PedidoController::class, 'index']);

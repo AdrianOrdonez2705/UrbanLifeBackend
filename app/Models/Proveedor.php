@@ -34,6 +34,6 @@ class Proveedor extends Model
     }
 
     public function pedidos() : HasMany {
-        return $this->hasMany(Pedido::class, 'proveedor_id_proveedor', 'id_proveedor');
+        return $this->hasMany(Pedido::class, 'id_proveedor', 'id_proveedor');
     }
 }
