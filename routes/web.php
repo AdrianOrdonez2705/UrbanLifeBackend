@@ -5,6 +5,8 @@ use App\Mail\ActividadSospechosa;
 use App\Mail\RecuperarContrasenia;
 use App\Mail\Verificacion2Pasos;
 
+Route::get('generarPDF',[App\Http\Controllers\PdfController::Class, 'generarPDF']);
+
 Route::get('/actividad_sospechosa', function () {
     $usuario = [
         'nombre' => 'User',
