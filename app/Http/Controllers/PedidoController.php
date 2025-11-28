@@ -176,4 +176,36 @@ class PedidoController extends Controller
             'factura' => $dataFactura
         ], 201);
     }
+
+    public function pedidoTransito(Request $request) 
+    {
+        $validator = Validator::make($request->all(), [
+            'id_pedido' => 'required|integer',
+            'fecha_llegada_estimada' => 'required|date',
+            'estado' => 'required|string'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['message' => 'Error de formato de solicitud'], 422);
+        }
+
+        $data = $validator->validated();
+
+        $id_pedido = $data['id_pedido'];
+
+        $pedido = Pedido::find($id_pedido);
+
+        if (!$pedido) {
+            return response()->json(['message' => 'No se pudo encontrar el pedido'], 404);
+        }
+
+        $pedido->fecha_llegada_estimada = $data['fecha_llegada_estimada'];
+        $pedido->estado = $data['estado'];
+        $pedido->save();
+
+        return response()->json([
+            'message' => 'Estado del pedido (transito) actualizado exitosamente',
+            'data' => $pedido
+        ], 200);
+    }
 }
