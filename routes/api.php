@@ -80,3 +80,6 @@ Route::post('/registrar_pedido', [PedidoController::class, 'store']);
 
 // OBTENER TODOS LOS DATOS DE LOS PEDIDOS
 Route::get('/get_all_pedidos', [PedidoController::class, 'index']);
+
+// CAMBIAR ESTADO DE PEDIDO A "aceptado"
+Route::post('/cambiar_aceptado', [PedidoController::class, 'pedidoAceptado']);
