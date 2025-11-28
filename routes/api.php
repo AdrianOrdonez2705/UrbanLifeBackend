@@ -89,3 +89,6 @@ Route::put('/cambiar_transito', [PedidoController::class, 'pedidoTransito']);
 
 // CAMBIAR ESTADO DE PEDIDO A "rechazado"
 Route::put('/cambiar_rechazado', [PedidoController::class, 'pedidoRechazado']);
+
+// CAMBIAR ESTADO DE PEDIDO A "recibido"
+Route::post('/cambiar_recibido', [PedidoController::class, 'pedidoRecibido']);

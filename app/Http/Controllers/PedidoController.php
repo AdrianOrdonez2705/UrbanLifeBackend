@@ -6,7 +6,9 @@ use App\Http\Resources\PedidoMaterialResource;
 use App\Http\Resources\PedidoResource;
 use App\Models\Contabilidad;
 use App\Models\Factura;
+use App\Models\MaterialAlmacen;
 use App\Models\Pedido;
+use Dotenv\Parser\Value;
 use Illuminate\Cache\Repository;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -239,5 +241,74 @@ class PedidoController extends Controller
             'message' => 'Estado y mensaje actualizados, pedido rechazado exitosamente',
             'pedido' => $pedido
         ], 200);
+    }
+
+    public function pedidoRecibido(Request $request) 
+    {
+        $validator = Validator::make($request->all(), [
+            'id_pedido' => 'required|integer',
+            'id_proveedor' => 'required|integer',
+            'estado' => 'required|string',
+            'fecha_llegada_real' => 'required|date',
+            'materiales' => 'required|array|min:1',
+            'materiales.*.nombre' => 'required|string',
+            'materiales.*.cantidad' => 'required|numeric'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+
+        $data = $validator->validated();
+        $id_pedido = $data['id_pedido'];
+        $id_proveedor = $data['id_proveedor'];
+        $materiales = $data['materiales'];
+        $materialesCreados = [];
+
+        DB::beginTransaction();
+
+        try {
+            $pedido = Pedido::find($id_pedido);
+
+            if (!$pedido) {
+                DB::rollBack();
+                return response()->json(['message' => 'No se pudo encontrar el pedido'], 404);
+            }
+            
+            if ($pedido->estado == 'recibido') {
+                DB::rollBack();
+                return response()->json(['message' => 'Este pedido ya había sido marcado como recibido'], 422);
+            }
+
+            $pedido->estado = $data['estado'];
+            $pedido->fecha_llegada_real = $data['fecha_llegada_real'];
+            $pedido->save();
+
+            foreach ($materiales as $material) {
+                $registroMaterial = [
+                    'id_proveedor' => $id_proveedor,
+                    'nombre' => $material['nombre'],
+                    'cantidad' => $material['cantidad'],
+                ];
+                
+                $materialAlmacen = MaterialAlmacen::create($registroMaterial);
+                $materialesCreados[] = $materialAlmacen;
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'message' => 'Pedido marcado como recibido y materiales registrados en el almacén exitosamente.',
+                'pedido' => $pedido,
+                'materiales' => $materialesCreados
+            ], 200);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'Error al procesar la recepción del pedido y registrar los materiales.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 }
