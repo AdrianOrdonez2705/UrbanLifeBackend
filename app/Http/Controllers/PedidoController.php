@@ -177,7 +177,7 @@ class PedidoController extends Controller
         ], 201);
     }
 
-    public function pedidoTransito(Request $request) 
+    public function pedidoTransito(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'id_pedido' => 'required|integer',
@@ -186,7 +186,7 @@ class PedidoController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['message' => 'Error de formato de solicitud'], 422);
+            return response()->json($validator->errors(), 422);
         }
 
         $data = $validator->validated();
@@ -206,6 +206,38 @@ class PedidoController extends Controller
         return response()->json([
             'message' => 'Estado del pedido (transito) actualizado exitosamente',
             'data' => $pedido
+        ], 200);
+    }
+
+    public function pedidoRechazado(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'id_pedido' => 'required|integer',
+            'estado' => 'required|string',
+            'mensaje' => 'required|string'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+
+        $data = $validator->validated();
+        $id_pedido = $data['id_pedido'];
+
+        $pedido = Pedido::find($id_pedido);
+
+        if (!$pedido) {
+            return response()->json(['message' => 'No se pudo encontrar el pedido'], 404);
+        }
+
+        $pedido->estado = $data['estado'];
+        $pedido->mensaje = $data['mensaje'];
+
+        $pedido->save();
+
+        return response()->json([
+            'message' => 'Estado y mensaje actualizados, pedido rechazado exitosamente',
+            'pedido' => $pedido
         ], 200);
     }
 }
