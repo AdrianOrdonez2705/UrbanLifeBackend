@@ -7,20 +7,33 @@ use App\Models\MaterialProveedor;
 use App\Models\Contabilidad;
 use App\Models\MaterialPedido;
 use App\Models\Proveedor;
+use App\Models\Pedido;
 use Barryvdh\DomPDF\Facade\Pdf;
 
 class PdfController extends Controller
 {
-    public function generarPDF()
+    public function generarPDF($idPedido)
     {
-        $materiales = MaterialProveedor::get();
-        $date = date('m/d/Y');
+        $pedido = Pedido::with(['proveedor', 'materiales_pedido.materialProveedor'])->findOrFail($idPedido);
+        $proveedor = $pedido->proveedor->nombre;
+        $materiales = $pedido->materiales_pedido;
+        $total = $materiales->sum(function ($item) {
+            return $item->cantidad * $item->precio_unitario;
+        });
+
+
+        //$proveedor = Proveedor::with(['pedidos.materialesPedido.materialProveedor'])->find("id_proveedor");
+        //$cantidad = MaterialPedido::get();
+        //$contabilidad = Contabilidad::get();
+        $date = date('d-m-Y');
         $data = [
-            'title' => 'Pedido',
             'date' => $date,
-            'materiales' => $materiales
+            'materiales' => $materiales,
+            'proveedor' => $proveedor,
+            'pedido' => $pedido,
+            'total' => $total
         ];
         $pdf = Pdf::loadView('pdf.generarPedidoPDF', $data);
-        return $pdf->download('PedidoMaterial.pdf');
+        return $pdf->download("PedidoMaterial{$idPedido}{$date}.pdf");
     }
 }
