@@ -34,8 +34,8 @@ class Pedido extends Model
         return $this->belongsToMany(
             MaterialProveedor::class,
             'material_pedido',
-            'pedido_id_pedido',
-            'material_id_material'
+            'id_pedido',
+            'id_material'
         )->withPivot('cantidad', 'precio_unitario');
     }
 

@@ -28,6 +28,7 @@ class UsuarioController extends Controller
                     'contrasenia'=> $usuario->contrasenia,
                     'rol'        => $usuario->rol->rol ?? null,
                     'nombre'     => $usuario->empleado->nombre ?? null,
+                     'empleadoId'   => $usuario->empleado->id_empleado ?? null,
                 ];
             });
 
