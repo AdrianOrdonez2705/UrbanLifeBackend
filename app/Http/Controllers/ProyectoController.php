@@ -6,6 +6,8 @@ use App\Models\Proyecto;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
 
 class ProyectoController extends Controller
 {
@@ -68,5 +70,44 @@ class ProyectoController extends Controller
         });
 
         return response()->json($data);
+    }
+
+    public function store(Request $request): JsonResponse
+    {
+        try {
+            $validatedData = $request->validate([
+                'nombre' => 'required|string',
+                'descripcion' => 'required|string',
+                'fecha_inicio' => 'required|date',
+                'fecha_fin' => 'required|date|after:fecha_inicio',
+                'estado' => 'required|string',
+                'presupuesto' => 'required|numeric|min:0',
+                'departamento' => 'required|string',
+                'id_usuario' => 'nullable|integer|exists:usuario,id_usuario',
+                'id_empleado' => 'nullable|integer|exists:empleado,id_empleado',
+            ]);
+
+            $proyecto = Proyecto::create($validatedData);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Proyecto registrado correctamente.',
+                'data' => $proyecto
+            ], 201);
+
+        } catch (ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error de validación al registrar el proyecto.',
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            Log::error('Error al registrar proyecto: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Ocurrió un error inesperado al intentar registrar el proyecto.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 }

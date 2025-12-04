@@ -102,3 +102,6 @@ Route::get('/get_all_proyectos_data', [ProyectoController::class, 'getAllProject
 
 // SACAR TODOS LOS USUARIOS DE TIPO JEFE DE OBRA
 Route::get('/get_jefes_de_obra', [UsuarioController::class, 'getJefesDeObra']);
+
+// REGISTRAR UN NUEVO PROYECTO
+Route::post('/registrar_proyecto', [ProyectoController::class, 'store']);
