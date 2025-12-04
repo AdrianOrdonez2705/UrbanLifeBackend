@@ -15,9 +15,9 @@ class Usuario extends Authenticatable implements JWTSubject
     public $timestamps = false;
 
     protected $fillable = [
+        'rol_id_rol',
         'correo',
         'contrasenia',
-        'rol_id_rol',
         'empleado_id_empleado'
     ];
 

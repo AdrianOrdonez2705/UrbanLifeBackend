@@ -99,3 +99,6 @@ Route::post('/cambiar_recibido', [PedidoController::class, 'pedidoRecibido']);
 
 // SACAR INFORMACION DE TODOS LOS PROYECTOS
 Route::get('/get_all_proyectos_data', [ProyectoController::class, 'getAllProjectsData']);
+
+// SACAR TODOS LOS USUARIOS DE TIPO JEFE DE OBRA
+Route::get('/get_jefes_de_obra', [UsuarioController::class, 'getJefesDeObra']);

@@ -32,9 +32,6 @@ class ProyectoController extends Controller
         return response()->json($proyectosActivos);
     }
 
-
-
-
     public function getAllProjectsData(): JsonResponse
     {
         $proyectos = Proyecto::with(['documentos', 'actividades', 'empleado'])->get();

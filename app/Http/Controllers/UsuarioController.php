@@ -6,6 +6,7 @@ use App\Models\Empleado;
 use App\Models\Rol;
 use App\Models\Usuario;
 use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -205,6 +206,34 @@ class UsuarioController extends Controller
             return response()->json([
                 'error' => 'No se pudo asignar un usuario al empleado',
                 'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function getJefesDeObra(): JsonResponse
+    {
+        $JEFE_DE_OBRA_ID = 6;
+
+        try {
+            $usuariosJefesObra = Usuario::where('rol_id_rol', $JEFE_DE_OBRA_ID)
+                ->with('empleado:id_empleado,nombre')
+                ->get();
+
+            $data = $usuariosJefesObra->map(function ($usuario) {
+                return [
+                    'id_usuario' => $usuario->id_usuario,
+                    'nombre_empleado' => $usuario->empleado->nombre ?? 'Nombre Desconocido',
+                ];
+            });
+
+            return response()->json($data, 200);
+
+        } catch (\Exception $e) {
+            Log::error('Error al obtener Jefes de Obra: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Ocurrió un error al obtener la lista de Jefes de Obra.',
+                'error' => $e->getMessage()
             ], 500);
         }
     }
