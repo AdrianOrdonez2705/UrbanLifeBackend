@@ -92,3 +92,10 @@ Route::put('/cambiar_rechazado', [PedidoController::class, 'pedidoRechazado']);
 
 // CAMBIAR ESTADO DE PEDIDO A "recibido"
 Route::post('/cambiar_recibido', [PedidoController::class, 'pedidoRecibido']);
+
+
+
+// PARA HU-006
+
+// SACAR INFORMACION DE TODOS LOS PROYECTOS
+Route::get('/get_all_proyectos_data', [ProyectoController::class, 'getAllProjectsData']);

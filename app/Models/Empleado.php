@@ -14,6 +14,7 @@ class Empleado extends Model
         'nombre',
         'puesto',
         'contrato',
+        'activo'
     ];
 
     protected $casts = [

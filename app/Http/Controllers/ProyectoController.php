@@ -31,4 +31,45 @@ class ProyectoController extends Controller
 
         return response()->json($proyectosActivos);
     }
+
+
+
+
+    public function getAllProjectsData(): JsonResponse
+    {
+        $proyectos = Proyecto::with(['documentos', 'actividades', 'empleado'])->get();
+
+        $data = $proyectos->map(function ($proyecto) {
+            return [
+                'id_proyecto' => $proyecto->id_proyecto,
+                'nombre' => $proyecto->nombre,
+                'descripcion' => $proyecto->descripcion,
+                'fecha_inicio' => $proyecto->fecha_inicio ? $proyecto->fecha_inicio->format('Y-m-d') : null,
+                'fecha_fin' => $proyecto->fecha_fin ? $proyecto->fecha_fin->format('Y-m-d') : null,
+                'estado' => $proyecto->estado,
+                'presupuesto' => $proyecto->presupuesto,
+                'departamento' => $proyecto->departamento,
+                'nombre_empleado' => $proyecto->empleado ? $proyecto->empleado->nombre : 'Sin Empleado Asignado',
+
+                'documentos' => $proyecto->documentos->map(function ($documento) {
+                    return [
+                        'nombre_documento' => $documento->nombre,
+                        'tipo' => $documento->tipo,
+                        'ruta' => $documento->ruta,
+                    ];
+                })->toArray(),
+
+                'actividades' => $proyecto->actividades->map(function ($actividad) {
+                    return [
+                        'nombre_actividad' => $actividad->nombre,
+                        'descripcion' => $actividad->descripcion,
+                        'fecha' => $actividad->fecha ? $actividad->fecha->format('Y-m-d') : null,
+                        'estado' => $actividad->estado,
+                    ];
+                })->toArray(),
+            ];
+        });
+
+        return response()->json($data);
+    }
 }

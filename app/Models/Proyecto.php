@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Proyecto extends Model
@@ -15,13 +16,14 @@ class Proyecto extends Model
 
     protected $fillable = [
         'nombre',
-        'imagen',
         'descripcion',
         'fecha_inicio',
         'fecha_fin',
         'estado',
         'presupuesto',
-        'departamento'
+        'departamento',
+        'id_usuario',
+        'id_empleado'
     ];
 
     protected $casts = [
@@ -43,5 +45,20 @@ class Proyecto extends Model
 
     public function pedidos() : HasMany {
         return $this->hasMany(Pedido::class, 'id_proyecto', 'id_proyecto');
+    }
+
+    public function documentos() : HasMany 
+    {
+        return $this->hasMany(Documento::class, 'proyecto_id_proyecto', 'id_proyecto');    
+    }
+
+    public function actividades() : HasMany 
+    {
+        return $this->hasMany(Actividad::class, 'proyecto_id_proyecto', 'id_proyecto');
+    }
+
+    public function empleado() : BelongsTo 
+    {
+        return $this->belongsTo(Empleado::class, 'id_empleado', 'id_empleado');    
     }
 }
