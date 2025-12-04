@@ -7,6 +7,7 @@ use App\Http\Controllers\ProveedorController;
 use App\Http\Controllers\ProyectoController;
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\ContabilidadController;
+use App\Http\Controllers\DocumentoController;
 use App\Http\Controllers\MaterialProveedorController;
 use App\Http\Controllers\EmpleadoController;
 use App\Http\Controllers\PedidoController;
@@ -103,5 +104,35 @@ Route::get('/get_all_proyectos_data', [ProyectoController::class, 'getAllProject
 // SACAR TODOS LOS USUARIOS DE TIPO JEFE DE OBRA
 Route::get('/get_jefes_de_obra', [UsuarioController::class, 'getJefesDeObra']);
 
+
 // REGISTRAR UN NUEVO PROYECTO
+/*
+    Este endpoint recibe un JSON así:
+        {
+            "nombre": "Lomas del Sol",
+            "descripcion": "Condominio moderno en Achumani",
+            "fecha_inicio": "2025-12-04",
+            "fecha_fin": "2026-12-04",
+            "estado": "en construcción",
+            "presupuesto": 250000.0,
+            "departamento": "La Paz",
+            "id_usuario": 11,
+            "id_empleado": 9
+        }
+*/
 Route::post('/registrar_proyecto', [ProyectoController::class, 'store']);
+
+
+
+// REGISTRAR UN DOCUMENTO
+/*
+    Este endpoint recibe un JSON así:
+        {
+            "id_proyecto": 4,
+            "nombre_documento": "Planos iniciales",
+            "tipo": "Planos",
+            "fecha": "2025-12-04",
+            "ruta": "https://ruta_a_documento"
+        }
+*/
+Route::post('/registrar_documento', [DocumentoController::class, 'store']);
