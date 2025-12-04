@@ -7,6 +7,7 @@ use App\Http\Controllers\ProveedorController;
 use App\Http\Controllers\ProyectoController;
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\ContabilidadController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DocumentoController;
 use App\Http\Controllers\MaterialProveedorController;
 use App\Http\Controllers\EmpleadoController;
@@ -136,3 +137,8 @@ Route::post('/registrar_proyecto', [ProyectoController::class, 'store']);
         }
 */
 Route::post('/registrar_documento', [DocumentoController::class, 'store']);
+
+
+
+// PARA LOS DASHBOARDS
+Route::get('/dashboard_data', [DashboardController::class, 'overview']);

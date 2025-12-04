@@ -17,4 +17,8 @@ class MaterialAlmacen extends Model
         'nombre',
         'cantidad'
     ];
+
+    protected $casts = [
+        'cantidad' => 'float'
+    ];
 }
