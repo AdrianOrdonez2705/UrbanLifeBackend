@@ -14,6 +14,11 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use App\Mail\PedidoMailable;
+use Illuminate\Support\Facades\Mail;
+use Barryvdh\DomPDF\Facade\Pdf;
+use App\Mail\EnviarPedido;
+
 
 use function PHPSTORM_META\map;
 
@@ -172,11 +177,29 @@ class PedidoController extends Controller
             'contabilidad_id_contabilidad' => $id_contabilidad
         ]);
 
+        $materiales = $pedido->materiales_pedido;
+        $date = date('d-m-Y');
+        $total = $materiales->sum(fn($item) => $item->cantidad * $item->precio_unitario);
+
+        $data = [
+            'date' => $date,
+            'materiales' => $materiales,
+            'proveedor' => $pedido->proveedor->nombre,
+            'pedido' => $pedido,
+            'total' => $total,
+        ];
+
+        $pdf = Pdf::loadView('pdf.generarPedidoPDF', $data);
+
+        Mail::to($pedido->proveedor->correo)->send(new EnviarPedido($pedido, $pedido->proveedor->nombre, $total, $date, $pdf));
+
+
         return response()->json([
-            'message' => 'Estado de pedido actualizado, contabilidad y factura registrados exitosamente',
+            'message' => 'Pedido aceptado, contabilidad y factura registrados, PDF enviado al proveedor',
             'contabilidad' => $contabilidad,
             'factura' => $dataFactura
         ], 201);
+
     }
 
     public function pedidoTransito(Request $request)
