@@ -8,6 +8,7 @@ use App\Models\Contabilidad;
 use App\Models\Factura;
 use App\Models\MaterialAlmacen;
 use App\Models\Pedido;
+use App\Models\Proyecto;
 use Dotenv\Parser\Value;
 use Illuminate\Cache\Repository;
 use Illuminate\Http\JsonResponse;
@@ -18,7 +19,6 @@ use App\Mail\PedidoMailable;
 use Illuminate\Support\Facades\Mail;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Mail\EnviarPedido;
-
 
 use function PHPSTORM_META\map;
 
@@ -334,4 +334,29 @@ class PedidoController extends Controller
             ], 500);
         }
     }
+
+    public function contabilidadPorProyecto($idProyecto)
+    {
+        $proyecto = Proyecto::with(['pedidos.factura.contabilidad'])->findOrFail($idProyecto);
+
+        $pedidos = $proyecto->pedidos;
+
+        $totalProyecto = $pedidos->sum(function ($pedido) {
+            return $pedido->factura && $pedido->factura->contabilidad
+                ? $pedido->factura->contabilidad->monto
+                : 0;
+        });
+
+        $data = [
+            'proyecto' => $proyecto,
+            'pedidos' => $pedidos,
+            'totalProyecto' => $totalProyecto,
+            'date' => date('Y-m-d'),
+        ];
+
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.contabilidadProyecto', $data);
+
+        return $pdf->download("ContabilidadProyecto_{$proyecto->id_proyecto}_{$data['date']}.pdf");
+    }
+
 }

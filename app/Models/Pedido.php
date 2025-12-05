@@ -73,4 +73,22 @@ class Pedido extends Model
             }
         );
     }
+    public function factura()
+    {
+        return $this->hasOne(Factura::class, 'pedido_id_pedido', 'id_pedido');
+    }
+
+    // Acceso indirecto a contabilidad
+    public function contabilidad()
+    {
+        return $this->hasOneThrough(
+            Contabilidad::class,
+            Factura::class,
+            'pedido_id_pedido',       // Foreign key en factura
+            'id_contabilidad',        // Primary key en contabilidad
+            'id_pedido',              // Local key en pedido
+            'contabilidad_id_contabilidad' // Foreign key en factura
+        );
+    }
+
 }

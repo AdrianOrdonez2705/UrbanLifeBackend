@@ -4,8 +4,10 @@ use Illuminate\Support\Facades\Mail;
 use App\Mail\ActividadSospechosa;
 use App\Mail\RecuperarContrasenia;
 use App\Mail\Verificacion2Pasos;
+use App\Http\Controllers\PedidoController;
 
 Route::get('generarPDF/{idPedido}',[App\Http\Controllers\PdfController::Class, 'generarPDF']);
+Route::get('/reporte/{id}', [PedidoController::class, 'contabilidadPorProyecto']);
 
 Route::get('/actividad_sospechosa', function () {
     $usuario = [
