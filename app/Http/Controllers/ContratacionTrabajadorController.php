@@ -68,6 +68,30 @@ class ContratacionTrabajadorController extends Controller
         }
     }
 
+    public function activoFalsePorDespido(Request $request) : JsonResponse 
+    {
+        $id_contratacion_trabajador = $request->input('id_contratacion_trabajador');
+
+        $contratacion = ContratacionTrabajador::find($id_contratacion_trabajador);
+
+        if (!$contratacion) {
+            return response()->json(['message' => 'Contratacion no encontrada'], 404);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'id_contratacion_trabajador' => 'required|integer',
+            'activo' => 'required|boolean',
+            'observacion' => 'required|string'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+
+        $contratacion->update($validator->validated());
+        return response()->json($contratacion, 200);
+    }
+
     public function update(Request $request) : JsonResponse 
     {
         $id_contratacion_trabajador = $request->input('id_contratacion_trabajador');

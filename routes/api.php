@@ -164,6 +164,18 @@ Route::post('/registrar_contratacion', [ContratacionTrabajadorController::class,
 
 Route::get('/get_all_contrataciones', [ContratacionTrabajadorController::class, 'index']);
 
+/* Este endpoint recibe un JSON así:
+    {
+        "id_contratacion_trabajador": 1,
+        "activo": false,
+        "observacion": "No cumplió sus tareas encomendadas"
+    }
+
+# IMPORTANTE: Para este endpoint todos los campos son obligatorios ya que no pueden haber 
+despidos injustificados.
+*/
+Route::put('/despedir_contratacion', [ContratacionTrabajadorController::class, 'activoFalsePorDespido']);
+
 /* Este endpoint (PUT) recibe un JSON así:
     {
         "id_contratacion_trabajador": 1,
