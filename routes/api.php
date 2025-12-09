@@ -142,3 +142,7 @@ Route::post('/registrar_documento', [DocumentoController::class, 'store']);
 
 // PARA LOS DASHBOARDS
 Route::get('/dashboard_data', [DashboardController::class, 'overview']);
+
+
+// NUEVOS ENDPOINTS
+Route::get('/index_trabajadores', [TrabajadorController::class, 'indexAll']);

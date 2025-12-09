@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Asistencia;
 use App\Models\ContratacionTrabajador;
 use App\Models\Trabajador;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -91,5 +92,18 @@ class TrabajadorController extends Controller
         }
 
         return response()->json(['data' => $lista]);
+    }
+
+    public function indexAll(): JsonResponse 
+    {
+        $trabajadores = Trabajador::select('id_trabajador', 'nombre')->get();
+
+        if (!$trabajadores) {
+            return response()->json([
+                'message' => 'No hay trabajadores'
+            ], 404);
+        }
+
+        return response()->json($trabajadores, 200);
     }
 }
