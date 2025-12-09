@@ -7,6 +7,7 @@ use App\Http\Controllers\ProveedorController;
 use App\Http\Controllers\ProyectoController;
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\ContabilidadController;
+use App\Http\Controllers\ContratacionTrabajadorController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DocumentoController;
 use App\Http\Controllers\MaterialProveedorController;
@@ -146,3 +147,4 @@ Route::get('/dashboard_data', [DashboardController::class, 'overview']);
 
 // NUEVOS ENDPOINTS
 Route::get('/index_trabajadores', [TrabajadorController::class, 'indexAll']);
+Route::post('/registrar_contratacion', [ContratacionTrabajadorController::class, 'store']);
