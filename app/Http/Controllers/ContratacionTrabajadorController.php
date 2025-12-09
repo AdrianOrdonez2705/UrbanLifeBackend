@@ -9,6 +9,18 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 
 class ContratacionTrabajadorController extends Controller
 {
+    public function index() : JsonResponse 
+    {
+        $contrataciones = ContratacionTrabajador::all();
+        
+        if (!$contrataciones) {
+            return response()->json(['message' => 'No hay contrataciones registradas'], 404);
+        }
+
+        return response()->json($contrataciones, 200);
+    }
+
+
     public function store(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [

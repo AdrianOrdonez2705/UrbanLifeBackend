@@ -147,4 +147,19 @@ Route::get('/dashboard_data', [DashboardController::class, 'overview']);
 
 // NUEVOS ENDPOINTS
 Route::get('/index_trabajadores', [TrabajadorController::class, 'indexAll']);
+
+/* Este endpoint recibe un json así:
+    {
+        "id_trabajador": 1,
+        "fecha_inicio": "2025-12-08",
+        "fecha_fin": "2026-12-08",
+        "puesto": "Obrero",
+        "salario": 2000,
+        "contrato": "/ruta_a_contrato",
+        "activo": true,
+        "id_proyecto": 2
+    }
+*/
 Route::post('/registrar_contratacion', [ContratacionTrabajadorController::class, 'store']);
+
+Route::get('/get_all_contrataciones', [ContratacionTrabajadorController::class, 'index']);
