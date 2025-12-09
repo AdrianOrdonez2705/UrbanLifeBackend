@@ -67,4 +67,34 @@ class ContratacionTrabajadorController extends Controller
             ], 500);
         }
     }
+
+    public function update(Request $request) : JsonResponse 
+    {
+        $id_contratacion_trabajador = $request->input('id_contratacion_trabajador');
+
+        $contratacion = ContratacionTrabajador::find($id_contratacion_trabajador);
+
+        if (!$contratacion) {
+            return response()->json(['message' => 'Contratacion no encontrada'], 404);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'id_contratacion_trabajador' => 'required|integer',
+            'trabajador_id_trabajador' => 'sometimes|integer',
+            'fecha_inicio' => 'sometimes|date',
+            'fecha_fin' => 'sometimes|date',
+            'puesto' => 'sometimes|string',
+            'salario' => 'sometimes|numeric',
+            'contrato' => 'sometimes|string',
+            'activo' => 'sometimes|boolean',
+            'proyecto_id_proyecto' => 'sometimes|integer'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+
+        $contratacion->update($validator->validated());
+        return response()->json($contratacion, 200);
+    }
 }

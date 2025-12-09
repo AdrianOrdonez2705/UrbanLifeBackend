@@ -163,3 +163,24 @@ Route::get('/index_trabajadores', [TrabajadorController::class, 'indexAll']);
 Route::post('/registrar_contratacion', [ContratacionTrabajadorController::class, 'store']);
 
 Route::get('/get_all_contrataciones', [ContratacionTrabajadorController::class, 'index']);
+
+/* Este endpoint (PUT) recibe un JSON así:
+    {
+        "id_contratacion_trabajador": 1,
+        "trabajador_id_trabajador": 2,
+        "fecha_inicio": "2025-12-10",
+        "fecha_fin": "2026-12-10",
+        "puesto": "Ingeniero",
+        "salario": 5000.0,
+        "contrato": "/ruta_nueva",
+        "activo": true,
+        "proyecto_id_proyecto": 2
+    }
+
+# IMPORTANTE: Este endpoint tiene que recibir SÍ O SÍ el id_contratacion_trabajador
+para poder ubicar el contrato para actualizar, además, en caso de que el JSON tenga
+ya sea el id del trabajador o el id del proyecto, se lo tiene que mandar como
+"trabajador_id_trabajador" y/o "proyecto_id_proyecto". Si se le manda solamente
+como "id_trabajador" o "id_proyecto" puede que no funcione y retorne error.
+*/
+Route::put('/actualizar_contratacion', [ContratacionTrabajadorController::class, 'update']);
