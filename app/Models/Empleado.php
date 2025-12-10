@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Empleado extends Model
 {
@@ -20,4 +21,14 @@ class Empleado extends Model
     protected $casts = [
         'activo' => 'boolean',
     ];
+
+    public function actividades() : BelongsToMany 
+    {
+        return $this->belongsToMany(
+            Actividad::class,
+            'empleado_actividad',
+            'empleado_id_empleado',
+            'actividad_id_actividad'
+        );
+    }
 }

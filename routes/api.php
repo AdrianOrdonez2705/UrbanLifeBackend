@@ -217,3 +217,5 @@ Route::put('/actualizar_contratacion', [ContratacionTrabajadorController::class,
     }
 */
 Route::post('/registrar_actividad', [ActividadController::class, 'store']);
+
+Route::get('/listar_actividades', [ActividadController::class, 'index']);

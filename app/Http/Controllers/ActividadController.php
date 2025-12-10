@@ -11,6 +11,42 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 
 class ActividadController extends Controller
 {
+    public function index() : JsonResponse 
+    {
+        $actividades = Actividad::with([
+            'imagenes' => function ($query) {
+                $query->select('actividad_id_actividad', 'ruta');
+            },
+            'empleados' => function ($query) {
+                $query->select('id_empleado', 'nombre');
+            }
+        ])->get();
+
+        $data = $actividades->map(function ($actividad) {
+            $rutasImagenes = $actividad->imagenes->pluck('ruta')->map(function ($ruta) {
+                return ['ruta' => $ruta];
+            });
+            $nombresEmpleados = $actividad->empleados->pluck('nombre')->map(function ($nombre) {
+                return ['nombre' => $nombre];
+            });
+
+            return [
+                'id_actividad' => $actividad->id_actividad,
+                'contrato_id_contrato' => $actividad->contrato_id_contrato,
+                'proyecto_id_proyecto' => $actividad->proyecto_id_proyecto,
+                'nombre' => $actividad->nombre,
+                'descripcion' => $actividad->descripcion,
+                'fecha' => $actividad->fecha,
+                'estado' => $actividad->estado,
+                'imagenes' => $rutasImagenes,
+                'empleados' => $nombresEmpleados
+            ];
+        });
+
+        return response()->json($data);
+    }
+
+
     public function store(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
