@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ActividadController;
 use App\Http\Controllers\MensajeController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -196,3 +197,23 @@ ya sea el id del trabajador o el id del proyecto, se lo tiene que mandar como
 como "id_trabajador" o "id_proyecto" puede que no funcione y retorne error.
 */
 Route::put('/actualizar_contratacion', [ContratacionTrabajadorController::class, 'update']);
+
+/* Este endpoint recibe un JSON así:
+    {
+        "contrato_id_contrato": 1,
+        "nombre": "Sentar el tinglado",
+        "descripcion": "Limpiar el ambiente para hacer el tinglado",
+        "fecha": "2025-12-09",
+        "estado": "en progreso",
+        "proyecto_id_proyecto": 2,
+        "empleados": [
+            {
+                "id_empleado": 1
+            },
+            {
+                "id_empleado": 2
+            }
+        ]
+    }
+*/
+Route::post('/registrar_actividad', [ActividadController::class, 'store']);
