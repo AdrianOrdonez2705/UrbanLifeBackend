@@ -9,17 +9,23 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 
 class ContratacionTrabajadorController extends Controller
 {
-    public function index() : JsonResponse 
+    public function index(): JsonResponse
     {
-        $contrataciones = ContratacionTrabajador::all();
-        
-        if (!$contrataciones) {
+        $contrataciones = ContratacionTrabajador::with('trabajador')->get();
+
+        if ($contrataciones->isEmpty()) {
             return response()->json(['message' => 'No hay contrataciones registradas'], 404);
         }
 
-        return response()->json($contrataciones, 200);
-    }
+        $contratacionesMapped = $contrataciones->map(function ($contratacion) {
+            $data = $contratacion->toArray();
+            $data['nombre'] = optional($contratacion->trabajador)->nombre;
+            unset($data['trabajador']);
+            return $data;
+        });
 
+        return response()->json($contratacionesMapped, 200);
+    }
 
     public function store(Request $request): JsonResponse
     {
@@ -68,7 +74,7 @@ class ContratacionTrabajadorController extends Controller
         }
     }
 
-    public function activoFalsePorDespido(Request $request) : JsonResponse 
+    public function activoFalsePorDespido(Request $request): JsonResponse
     {
         $id_contratacion_trabajador = $request->input('id_contratacion_trabajador');
 
@@ -92,7 +98,7 @@ class ContratacionTrabajadorController extends Controller
         return response()->json($contratacion, 200);
     }
 
-    public function update(Request $request) : JsonResponse 
+    public function update(Request $request): JsonResponse
     {
         $id_contratacion_trabajador = $request->input('id_contratacion_trabajador');
 
