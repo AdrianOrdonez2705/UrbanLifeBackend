@@ -130,4 +130,33 @@ class ActividadController extends Controller
             'actividad' => $actividad
         ], 200);
     }
+
+    public function cambiarFinalizado(Request $request) : JsonResponse 
+    {
+        $validator = Validator::make($request->all(), [
+            'id_actividad' => 'required|integer',
+            'estado' => 'required|string'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+
+        $data = $validator->validated();
+        $idActividad = $data['id_actividad'];
+
+        $actividad = Actividad::find($idActividad);
+
+        if (!$actividad) {
+            return response()->json(['message' => 'Actividad no encontrada'], 404);
+        }
+
+        $actividad->estado = 'finalizado';
+        $actividad->save();
+
+        return response()->json([
+            'message' => 'Actividad finalizada correctamente',
+            'actividad' => $actividad
+        ], 200);
+    }
 }

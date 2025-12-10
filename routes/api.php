@@ -227,3 +227,11 @@ Route::get('/listar_actividades', [ActividadController::class, 'index']);
     }
 */
 Route::put('/actividad_enprogreso', [ActividadController::class, 'cambiarEnProgreso']);
+
+/* Este endpoint recibe un JSON así: 
+    {
+        "id_actividad": 1,
+        "estado": "finalizado"
+    }
+*/
+Route::put('/actividad_finalizado', [ActividadController::class, 'cambiarFinalizado']);
