@@ -46,7 +46,6 @@ class ActividadController extends Controller
         return response()->json($data);
     }
 
-
     public function store(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
@@ -101,5 +100,34 @@ class ActividadController extends Controller
             'message' => 'Registro realizado correctamente',
             'data' => $actividad
         ], 201);
+    }
+
+    public function cambiarEnProgreso(Request $request) : JsonResponse 
+    {
+        $validator = Validator::make($request->all(), [
+            'id_actividad' => 'required|integer',
+            'estado' => 'required|string'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+
+        $data = $validator->validated();
+        $idActividad = $data['id_actividad'];
+
+        $actividad = Actividad::find($idActividad);
+
+        if (!$actividad) {
+            return response()->json(['message' => 'Actividad no encontrada'], 404);
+        }
+
+        $actividad->estado = 'en progreso';
+        $actividad->save();
+
+        return response()->json([
+            'message' => 'Actividad actualizada correctamente',
+            'actividad' => $actividad
+        ], 200);
     }
 }

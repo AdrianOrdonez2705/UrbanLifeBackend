@@ -219,3 +219,11 @@ Route::put('/actualizar_contratacion', [ContratacionTrabajadorController::class,
 Route::post('/registrar_actividad', [ActividadController::class, 'store']);
 
 Route::get('/listar_actividades', [ActividadController::class, 'index']);
+
+/* Este endpoint recibe un JSON así: 
+    {
+        "id_actividad": 1,
+        "estado": "en progreso"
+    }
+*/
+Route::put('/actividad_enprogreso', [ActividadController::class, 'cambiarEnProgreso']);
