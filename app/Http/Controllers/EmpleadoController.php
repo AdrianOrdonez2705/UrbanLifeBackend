@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 class EmpleadoController extends Controller
 {
@@ -211,5 +212,16 @@ class EmpleadoController extends Controller
                 'error' => $e->getMessage()
             ], 500);
         }
+    }
+
+    public function sacarEmpleados() : JsonResponse 
+    {
+        $empleados = Empleado::all(['id_empleado', 'nombre']);
+
+        if (!$empleados) {
+            return response()->json(['No hay empleados'], 404);
+        }
+
+        return response()->json($empleados, 200);
     }
 }

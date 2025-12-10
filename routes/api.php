@@ -235,3 +235,5 @@ Route::put('/actividad_enprogreso', [ActividadController::class, 'cambiarEnProgr
     }
 */
 Route::put('/actividad_finalizado', [ActividadController::class, 'cambiarFinalizado']);
+
+Route::get('/sacar_empleados', [EmpleadoController::class, 'sacarEmpleados']);
