@@ -14,6 +14,7 @@ use App\Http\Controllers\DocumentoController;
 use App\Http\Controllers\MaterialProveedorController;
 use App\Http\Controllers\EmpleadoController;
 use App\Http\Controllers\MaterialAlmacenController;
+use App\Http\Controllers\MaterialProyectoController;
 use App\Http\Controllers\PedidoController;
 use App\Http\Controllers\TrabajadorController;
 use App\Http\Controllers\UsuarioController;
@@ -240,3 +241,13 @@ Route::put('/actividad_finalizado', [ActividadController::class, 'cambiarFinaliz
 Route::get('/sacar_empleados', [EmpleadoController::class, 'sacarEmpleados']);
 
 Route::get('/sacar_materiales', [MaterialAlmacenController::class, 'index']);
+
+/* Este endpoint recibe un JSON así:
+    {
+        "id_material_almacen": 2,
+        "id_proyecto": 2,
+        "fecha_entrega": "2025-12-10",
+        "cantidad": 15
+    }
+*/
+Route::post('/registrar_material_proyecto', [MaterialProyectoController::class, 'store']);
