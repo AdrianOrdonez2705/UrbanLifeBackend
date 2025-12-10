@@ -219,7 +219,7 @@ class EmpleadoController extends Controller
         $empleados = Empleado::all(['id_empleado', 'nombre']);
 
         if (!$empleados) {
-            return response()->json(['No hay empleados'], 404);
+            return response()->json(['message' => 'No hay empleados'], 404);
         }
 
         return response()->json($empleados, 200);

@@ -13,6 +13,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DocumentoController;
 use App\Http\Controllers\MaterialProveedorController;
 use App\Http\Controllers\EmpleadoController;
+use App\Http\Controllers\MaterialAlmacenController;
 use App\Http\Controllers\PedidoController;
 use App\Http\Controllers\TrabajadorController;
 use App\Http\Controllers\UsuarioController;
@@ -237,3 +238,5 @@ Route::put('/actividad_enprogreso', [ActividadController::class, 'cambiarEnProgr
 Route::put('/actividad_finalizado', [ActividadController::class, 'cambiarFinalizado']);
 
 Route::get('/sacar_empleados', [EmpleadoController::class, 'sacarEmpleados']);
+
+Route::get('/sacar_materiales', [MaterialAlmacenController::class, 'index']);
