@@ -13,6 +13,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DocumentoController;
 use App\Http\Controllers\MaterialProveedorController;
 use App\Http\Controllers\EmpleadoController;
+use App\Http\Controllers\ImagenActividadController;
 use App\Http\Controllers\MaterialAlmacenController;
 use App\Http\Controllers\MaterialProyectoController;
 use App\Http\Controllers\PedidoController;
@@ -237,6 +238,17 @@ Route::put('/actividad_enprogreso', [ActividadController::class, 'cambiarEnProgr
     }
 */
 Route::put('/actividad_finalizado', [ActividadController::class, 'cambiarFinalizado']);
+
+/* Este endpoint recibe un JSON así:
+    {
+        "id_actividad": 1, (OBLIGATORIO)
+        "nombre": "imagen_nombre", (OPCIONAL)
+        "tipo": "imagen_tipo", (OPCIONAL)
+        "fecha": "2025-12-10", (OPCIONAL)
+        "ruta": "/imagen/ruta_a_imagen.png" (OBLIGATORIO)
+    }
+*/
+Route::post('/subir_imagen', [ImagenActividadController::class, 'store']);
 
 Route::get('/sacar_empleados', [EmpleadoController::class, 'sacarEmpleados']);
 
