@@ -308,14 +308,22 @@ class PedidoController extends Controller
             $pedido->save();
 
             foreach ($materiales as $material) {
-                $registroMaterial = [
-                    'id_proveedor' => $id_proveedor,
-                    'nombre' => $material['nombre'],
-                    'cantidad' => $material['cantidad'],
+
+                $buscar = [
+                    'nombre' => $material['nombre']
                 ];
-                
-                $materialAlmacen = MaterialAlmacen::create($registroMaterial);
-                $materialesCreados[] = $materialAlmacen;
+
+                $materialAlmacen = MaterialAlmacen::firstOrCreate(
+                    $buscar,
+                    [
+                        'id_proveedor' => $id_proveedor,
+                        'cantidad' => 0
+                    ]
+                );
+
+                $materialAlmacen->increment('cantidad', $material['cantidad']);
+                $materialAlmacen->update(['id_proveedor' => $id_proveedor]);
+                $materialesCreados[] = $materialAlmacen->refresh();
             }
 
             DB::commit();
