@@ -24,8 +24,8 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
-Route::get('/health', function () {
-    return response()->json(['status' => 'healthy'], 200);
+Route::get('/health', function() {
+    return response('OK',200);
 });
 
 Route::get('/get_proyectos', [ProyectoController::class, 'index']);
