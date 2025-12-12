@@ -29,6 +29,7 @@ class UsuarioController extends Controller
                     'contrasenia'=> $usuario->contrasenia,
                     'rol'        => $usuario->rol->rol ?? null,
                     'nombre'     => $usuario->empleado->nombre ?? null,
+                    'empleadoId' => $usuario->empleado->id_empleado??null,
                 ];
             });
 
@@ -222,6 +223,7 @@ class UsuarioController extends Controller
             $data = $usuariosJefesObra->map(function ($usuario) {
                 return [
                     'id_usuario' => $usuario->id_usuario,
+                    'id_empleado' => $usuario->empleado_id_empleado,
                     'nombre_empleado' => $usuario->empleado->nombre ?? 'Nombre Desconocido',
                 ];
             });

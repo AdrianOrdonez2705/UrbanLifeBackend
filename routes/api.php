@@ -150,7 +150,7 @@ Route::get('/dashboard_data', [DashboardController::class, 'overview']);
 
 
 // NUEVOS ENDPOINTS
-Route::get('/index_trabajadores', [TrabajadorController::class, 'indexAll']);
+Route::get('/index_trabajadores', [TrabajadorController::class, 'indexAll']);//usado
 
 /* Este endpoint recibe un json así:
     {
@@ -164,9 +164,10 @@ Route::get('/index_trabajadores', [TrabajadorController::class, 'indexAll']);
         "id_proyecto": 2
     }
 */
-Route::post('/registrar_contratacion', [ContratacionTrabajadorController::class, 'store']);
-
-Route::get('/get_all_contrataciones', [ContratacionTrabajadorController::class, 'index']);
+//admin/proyectos designar obre
+Route::post('/registrar_contratacion', [ContratacionTrabajadorController::class, 'store']);//listo
+// admin proyectos trabajadores del proyecto
+Route::get('/get_all_contrataciones', [ContratacionTrabajadorController::class, 'index']);//usado
 
 /* Este endpoint recibe un JSON así:
     {
@@ -178,7 +179,8 @@ Route::get('/get_all_contrataciones', [ContratacionTrabajadorController::class, 
 # IMPORTANTE: Para este endpoint todos los campos son obligatorios ya que no pueden haber 
 despidos injustificados.
 */
-Route::put('/despedir_contratacion', [ContratacionTrabajadorController::class, 'activoFalsePorDespido']);
+//desabilitar trabajador
+Route::put('/despedir_contratacion', [ContratacionTrabajadorController::class, 'activoFalsePorDespido']);//listo
 
 /* Este endpoint (PUT) recibe un JSON así:
     {
@@ -199,11 +201,12 @@ ya sea el id del trabajador o el id del proyecto, se lo tiene que mandar como
 "trabajador_id_trabajador" y/o "proyecto_id_proyecto". Si se le manda solamente
 como "id_trabajador" o "id_proyecto" puede que no funcione y retorne error.
 */
-Route::put('/actualizar_contratacion', [ContratacionTrabajadorController::class, 'update']);
+//editar
+Route::put('/actualizar_contratacion', [ContratacionTrabajadorController::class, 'update']);//listo
 
 /* Este endpoint recibe un JSON así:
     {
-        "contrato_id_contrato": 1,
+       
         "nombre": "Sentar el tinglado",
         "descripcion": "Limpiar el ambiente para hacer el tinglado",
         "fecha": "2025-12-09",
@@ -219,7 +222,8 @@ Route::put('/actualizar_contratacion', [ContratacionTrabajadorController::class,
         ]
     }
 */
-Route::post('/registrar_actividad', [ActividadController::class, 'store']);
+
+Route::post('/registrar_actividad', [ActividadController::class, 'store']);//listo
 
 Route::get('/listar_actividades', [ActividadController::class, 'index']);
 
@@ -229,7 +233,7 @@ Route::get('/listar_actividades', [ActividadController::class, 'index']);
         "estado": "en progreso"
     }
 */
-Route::put('/actividad_enprogreso', [ActividadController::class, 'cambiarEnProgreso']);
+Route::put('/actividad_enprogreso', [ActividadController::class, 'cambiarEnProgreso']);//listo
 
 /* Este endpoint recibe un JSON así: 
     {
@@ -237,7 +241,7 @@ Route::put('/actividad_enprogreso', [ActividadController::class, 'cambiarEnProgr
         "estado": "finalizado"
     }
 */
-Route::put('/actividad_finalizado', [ActividadController::class, 'cambiarFinalizado']);
+Route::put('/actividad_finalizado', [ActividadController::class, 'cambiarFinalizado']);//listo
 
 /* Este endpoint recibe un JSON así:
     {
@@ -248,11 +252,11 @@ Route::put('/actividad_finalizado', [ActividadController::class, 'cambiarFinaliz
         "ruta": "/imagen/ruta_a_imagen.png" (OBLIGATORIO)
     }
 */
-Route::post('/subir_imagen', [ImagenActividadController::class, 'store']);
+Route::post('/subir_imagen', [ImagenActividadController::class, 'store']);//listo
 
-Route::get('/sacar_empleados', [EmpleadoController::class, 'sacarEmpleados']);
+Route::get('/sacar_empleados', [EmpleadoController::class, 'sacarEmpleados']);//listo
 
-Route::get('/sacar_materiales', [MaterialAlmacenController::class, 'index']);
+Route::get('/sacar_materiales', [MaterialAlmacenController::class, 'index']);//listo
 
 /* Este endpoint recibe un JSON así:
     {
@@ -262,4 +266,4 @@ Route::get('/sacar_materiales', [MaterialAlmacenController::class, 'index']);
         "cantidad": 15
     }
 */
-Route::post('/registrar_material_proyecto', [MaterialProyectoController::class, 'store']);
+Route::post('/registrar_material_proyecto', [MaterialProyectoController::class, 'store']);//listo

@@ -15,7 +15,7 @@ class Actividad extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'contrato_id_contrato',
+        //'contrato_id_contrato',
         'nombre',
         'descripcion',
         'fecha',

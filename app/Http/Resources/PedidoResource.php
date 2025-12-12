@@ -14,6 +14,7 @@ class PedidoResource extends JsonResource
             'nombre_proveedor' => $this->proveedor->nombre, 
             'fecha_solicitud' => $this->fecha_solicitud, 
             'materiales' => MaterialesPedidoResource::collection($this->materiales),
+            'id_proyecto' => $this->id_proyecto
         ];
     }
 }

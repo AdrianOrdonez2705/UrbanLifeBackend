@@ -32,7 +32,7 @@ class ActividadController extends Controller
 
             return [
                 'id_actividad' => $actividad->id_actividad,
-                'contrato_id_contrato' => $actividad->contrato_id_contrato,
+                //'contrato_id_contrato' => $actividad->contrato_id_contrato,
                 'proyecto_id_proyecto' => $actividad->proyecto_id_proyecto,
                 'nombre' => $actividad->nombre,
                 'descripcion' => $actividad->descripcion,
@@ -49,14 +49,14 @@ class ActividadController extends Controller
     public function store(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
-            'contrato_id_contrato' => 'required|integer',
+            //'contrato_id_contrato' => 'required|integer',
             'nombre' => 'required|string',
             'descripcion' => 'required|string',
             'fecha' => 'required|date',
             'estado' => 'required|string',
             'proyecto_id_proyecto' => 'required|integer',
-            'empleados' => 'required|array|min:1',
-            'empleados.*.id_empleado' => 'required|integer'
+            'empleados' => 'array',
+            'empleados.*.id_empleado' => 'integer'
         ]);
 
         if ($validator->fails()) {
@@ -69,7 +69,7 @@ class ActividadController extends Controller
             DB::beginTransaction();
 
             $actividad = Actividad::create([
-                'contrato_id_contrato' => $actividadData['contrato_id_contrato'],
+                //'contrato_id_contrato' => $actividadData['contrato_id_contrato'],
                 'nombre' => $actividadData['nombre'],
                 'descripcion' => $actividadData['descripcion'],
                 'fecha' => $actividadData['fecha'],

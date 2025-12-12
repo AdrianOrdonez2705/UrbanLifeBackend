@@ -60,6 +60,7 @@ class ProyectoController extends Controller
 
                 'actividades' => $proyecto->actividades->map(function ($actividad) {
                     return [
+                        'id_actividad'=>$actividad->id_actividad,
                         'nombre_actividad' => $actividad->nombre,
                         'descripcion' => $actividad->descripcion,
                         'fecha' => $actividad->fecha ? $actividad->fecha->format('Y-m-d') : null,
